@@ -1,0 +1,73 @@
+{
+    "name": "eligible",
+    "description": "Eligible seamlessly integrates with healthcare systems to provide real time eligibility functionality via modern APIs.",
+    "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/screen-capture-api\/189-eligible.jpg",
+    "tags": [
+        "api provider",
+        "have api",
+        "healthcare"
+    ],
+    "created": "2019-12-19",
+    "modified": "2019-12-19",
+    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/eligible\/master\/apis.json",
+    "specificationVersion": "0.14",
+    "apis": [
+        {
+            "name": "eligible",
+            "description": null,
+            "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/screen-capture-api\/189-eligible.jpg",
+            "humanURL": "https:\/\/eligible.com",
+            "baseURL": "",
+            "tags": [],
+            "properties": [
+                {
+                    "type": "x-openapi",
+                    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/1forge\/master\/eligible-openapi.json"
+                }
+            ]
+        }
+    ],
+    "include": [],
+    "x-common": [
+        {
+            "type": "Blog",
+            "url": "http:\/\/blog.eligibleapi.com\/"
+        },
+        {
+            "type": "Blog RSS",
+            "url": "https:\/\/eligible.com\/blog\/feed\/"
+        },
+        {
+            "type": "Crunchbase",
+            "url": "https:\/\/crunchbase.com\/organization\/eligible-api"
+        },
+        {
+            "type": "Crunchbase",
+            "url": "http:\/\/www.crunchbase.com\/company\/eligible-api"
+        },
+        {
+            "type": "Github",
+            "url": "https:\/\/github.com\/EligibleAPI"
+        },
+        {
+            "type": "Pricing",
+            "url": "https:\/\/eligible.com\/pricing"
+        },
+        {
+            "type": "Pricing",
+            "url": "https:\/\/eligible.com\/pricing"
+        },
+        {
+            "type": "Twitter",
+            "url": "https:\/\/twitter.com\/eligibleapi"
+        },
+        {
+            "type": "Website",
+            "url": "https:\/\/eligible.com"
+        },
+        {
+            "type": "Website",
+            "url": "https:\/\/eligibleapi.com\/"
+        }
+    ]
+}
