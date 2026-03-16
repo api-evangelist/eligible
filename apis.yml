@@ -1,23 +1,41 @@
-name: 'Eligible: Insurance Billing APIs for healthcare businesses'
+aid: eligible
+name: Eligible
 description: >-
-  Eligible APIs enable the integration of insurance billing experiences into
-  healthcare applications.  https://eligible.com/
-image: >-
-  https://kinlane-productions2.s3.amazonaws.com/apis-json-icons/eligible-insurance-billing-apis-for-healthcare-businesses.png
-url: >-
-  https://example.com/apis/eligible-insurance-billing-apis-for-healthcare-businesses.yml
-created: 2024/7/2
-modified: 2024/7/2
-specificationVersion: '0.16'
+  Eligible provides insurance billing APIs for healthcare businesses, enabling
+  the integration of insurance billing experiences into healthcare applications.
+  Their APIs support eligibility verification, claims management, and remittance
+  processing to streamline healthcare billing workflows.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - Bookmark
+  - Healthcare
+  - Insurance
+  - Billing
+  - Eligibility
+url: https://eligible.com/
+created: '2024-07-02'
+modified: '2026-03-16'
+position: Consumer
+access: 3rd-Party
+specificationVersion: '0.19'
 apis:
-  - name: 'Eligible: Insurance Billing APIs for healthcare businesses'
+  - aid: eligible:eligible-api
+    name: Eligible API
     description: >-
-      Eligible APIs enable the integration of insurance billing experiences into
-      healthcare applications.  https://eligible.com/
-    image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+      Insurance billing APIs that enable integration of eligibility
+      verification, claims, and remittance processing into healthcare
+      applications.
     humanURL: https://eligible.com/
+    tags:
+      - Healthcare
+      - Insurance
+      - Billing
+    properties:
+      - type: Documentation
+        url: https://eligible.com/
+common:
+  - type: Website
+    url: https://eligible.com/
 maintainers:
-  - FN: API Evangelist
-    email: info@apievangelist.com
+  - FN: Kin Lane
+    email: kin@apievangelist.com
