@@ -104,12 +104,16 @@ apis:
       - type: Documentation
         url: https://eligible.com/
 common:
+  - type: DomainSecurity
+    url: security/eligible-domain-security.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/eligible-api
   - type: Website
     url: https://eligible.com/
   - type: Documentation
     url: https://eligible.com/
+  - type: Blog
+    url: https://eligible.com/blog/feed/
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
