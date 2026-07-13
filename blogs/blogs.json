@@ -1,0 +1,15 @@
+{
+  "repo": "eligible",
+  "feeds": [
+    {
+      "source": "https://eligible.com/blog/feed/",
+      "error": "HTTPError"
+    },
+    {
+      "source": "https://eligible.com/",
+      "error": "HTTPError"
+    }
+  ],
+  "fetched": "2026-07-11T11:50:51Z",
+  "post_count": 10
+}
