@@ -8,17 +8,23 @@ description: >-
   processing across a large network of US payers.
 type: Index
 accessModel:
-  pricing: freemium
-  onboarding: unknown
+  pricing: paid
+  onboarding: waitlist
   trial: false
   try_now: false
   public: false
-  label: Freemium
-  confidence: medium
+  label: Paid
+  confidence: high
   source:
-  - plans
-  generated: '2026-07-22'
-  method: derived
+  - https://eligible.com/pricing
+  - https://eligible.com/signup
+  generated: '2026-08-15'
+  method: searched
+  note: >-
+    Corrected 2026-08-15. The previous "Freemium" label was derived from a scaffold
+    plans artifact that invented a free tier. Eligible publishes transactional pricing
+    (1% of dollars remitted + $0.25 per claim, $1/month account minimum) with no free
+    tier, and sign-up routes to a waitlist rather than to a key.
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/eligible.png
 tags:
   - Billing
@@ -28,7 +34,7 @@ tags:
   - Claims
 url: https://raw.githubusercontent.com/api-evangelist/eligible/refs/heads/main/apis.yml
 created: '2024-07-02'
-modified: '2026-04-28'
+modified: '2026-08-15'
 position: Consumer
 access: 3rd-Party
 specificationVersion: '0.19'
@@ -42,6 +48,7 @@ apis:
       details including plan status, copays, coinsurance, deductibles, and
       out-of-pocket maximums.
     humanURL: https://eligible.com/
+    baseURL: https://gds.eligibleapi.com/v1.5
     tags:
       - Coverage
       - Eligibility
@@ -49,7 +56,7 @@ apis:
       - Insurance
     properties:
       - type: Documentation
-        url: https://eligible.com/
+        url: https://eligible.com/docs
   - aid: eligible:claims
     name: Eligible Claims API
     description: >-
@@ -58,6 +65,7 @@ apis:
       Eligible network. The API also provides claim acknowledgement, rejection,
       and remittance retrieval workflows for healthcare billing applications.
     humanURL: https://eligible.com/
+    baseURL: https://gds.eligibleapi.com/v1.5
     tags:
       - Claims
       - Billing
@@ -65,7 +73,7 @@ apis:
       - Insurance
     properties:
       - type: Documentation
-        url: https://eligible.com/
+        url: https://eligible.com/docs
   - aid: eligible:payment-estimation
     name: Eligible Payment Estimation API
     description: >-
@@ -75,6 +83,7 @@ apis:
       The API helps providers offer transparent cost estimates and collect
       patient responsibility at the point of service.
     humanURL: https://eligible.com/
+    baseURL: https://gds.eligibleapi.com/v1.5
     tags:
       - Payment Estimation
       - Cost Transparency
@@ -82,7 +91,7 @@ apis:
       - Billing
     properties:
       - type: Documentation
-        url: https://eligible.com/
+        url: https://eligible.com/docs
   - aid: eligible:enrollment
     name: Eligible Enrollment API
     description: >-
@@ -91,6 +100,7 @@ apis:
       claims, and remittance transactions through Eligible. The API supports
       submission, tracking, and status retrieval of enrollment requests.
     humanURL: https://eligible.com/
+    baseURL: https://gds.eligibleapi.com/v1.5
     tags:
       - Enrollment
       - Trading Partner
@@ -98,7 +108,7 @@ apis:
       - Insurance
     properties:
       - type: Documentation
-        url: https://eligible.com/
+        url: https://eligible.com/docs
   - aid: eligible:payers
     name: Eligible Payers API
     description: >-
@@ -107,6 +117,7 @@ apis:
       types, enrollment requirements, and webhook capabilities. Clients use
       this API to select payers and check the status of supported transactions.
     humanURL: https://eligible.com/
+    baseURL: https://gds.eligibleapi.com/v1.5
     tags:
       - Payers
       - Directory
@@ -114,18 +125,93 @@ apis:
       - Insurance
     properties:
       - type: Documentation
-        url: https://eligible.com/
+        url: https://eligible.com/docs
 common:
-  - type: DomainSecurity
-    url: security/eligible-domain-security.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/eligible-api
   - type: Website
     url: https://eligible.com/
   - type: Documentation
-    url: https://eligible.com/
+    url: https://eligible.com/docs
+  - type: APIReference
+    url: https://eligible.com/reference
   - type: Blog
     url: https://eligible.com/blog/feed/
+  - type: Support
+    url: https://eligible.com/support
+  - type: GitHubOrganization
+    url: https://github.com/eligible
+  - type: Pricing
+    url: https://eligible.com/pricing
+  - type: SignUp
+    url: https://eligible.com/signup
+  - type: Login
+    url: https://eligible.com/users/sign_in
+  - type: TermsOfService
+    url: https://eligible.com/terms
+  - type: PrivacyPolicy
+    url: https://eligible.com/privacy
+  - type: StatusPage
+    url: https://status.eligible.com
+  - type: Compliance
+    url: https://eligible.com/compliance
+  - type: TrustCenter
+    url: security/eligible-trust-center.yml
+  - type: DomainSecurity
+    url: security/eligible-domain-security.yml
+  - type: Authentication
+    url: authentication/eligible-authentication.yml
+  - type: Conventions
+    url: conventions/eligible-conventions.yml
+  - type: ErrorCatalog
+    url: errors/eligible-error-codes.yml
+  - type: Lifecycle
+    url: lifecycle/eligible-lifecycle.yml
+  - type: Conformance
+    url: conformance/eligible-conformance.yml
+  - type: Packages
+    url: packages/eligible-packages.yml
+  - type: SDKs
+    url: packages/eligible-packages.yml
+  - type: Components
+    url: components/eligible-components.yml
+  - type: DataModel
+    url: data-model/eligible-data-model.yml
+  - type: Sandbox
+    url: sandbox/eligible-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/eligible-webhooks.yml
+  - type: Plans
+    url: plans/eligible-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/eligible-rate-limits.yml
+  - type: FinOps
+    url: finops/eligible-finops.yml
+  - type: LLMsTxt
+    url: llms/eligible-llms.txt
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-08-15'
+  status: enriched
+  artifacts_added: 6
+  pass: local-v1
+x-coverage:
+  state: covered
+  detail: >-
+    Enriched. Eligible publishes no machine-readable API contract of any kind and its
+    reference is behind an account login, but the pass reconstructed the surface from
+    the vendor's own first-party clients and found real published pricing, a real
+    webhook surface, a real sandbox, embeddable components, and seven public
+    machine-readable payer/passthrough-fee JSON documents.
+  evidence:
+    - url: https://eligible.com/pricing
+      status: 200
+    - url: https://eligible.com/resources/payers/eligibility.json
+      status: 200
+    - url: https://eligible.com/docs/api
+      status: 200
+    - url: https://gds.eligibleapi.com/v1.5/openapi.json
+      status: 401
+  checked: '2026-08-15'
