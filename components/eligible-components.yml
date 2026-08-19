@@ -1,0 +1,92 @@
+generated: '2026-08-15'
+method: searched
+source: >-
+  https://eligible.com/community/eligible-developer-tools-2/ ("Javascript Plugins"),
+  https://eligible.com/community/eligible-dev-tools-1/, and the site-wide footer
+  navigation which lists "Eligible.js" under "For Developers".
+docs: https://eligible.com/docs/claimsjs-overview
+note: >-
+  Eligible ships client-side, embeddable UI components — distinct from the five
+  first-party SDKs in packages/. They are described publicly, but every page that
+  documents how to load them (and therefore the script URL, the initialization options
+  and the publishable-key handshake) is behind the account login, and no public CDN
+  build was found. Nothing is fabricated here: the components are named exactly as
+  Eligible names them, and the missing loader details are recorded as missing.
+components:
+  - id: claims-js
+    name: Claims.js
+    family: Insurance Billing
+    kind: embeddable form widget
+    description: >-
+      "Claims.js simplifies your process by giving you a familiar CSM-1500 claim form
+      that you can implement with only a few minutes of work. This is especially
+      important because of the impact that data capture can have with rejected and
+      denied claims. We've taken things a step further as well, allowing you to use
+      jQuery to automatically fill the forms with data from inside of your system."
+    renders: A CMS-1500 professional claim form (Eligible's copy reads "CSM-1500").
+    integration: one line of JavaScript; jQuery-based programmatic pre-fill
+    docs: https://eligible.com/docs/claimsjs-overview
+    docs_status: 403
+    related_api: eligible:claims
+  - id: cost-estimate-js
+    name: Cost Estimate JS plugin
+    family: Price Transparency
+    kind: embeddable results widget
+    description: >-
+      "Due to the number of fields that need to be parsed and displayed, Coverage
+      integration can be challenging. Eligible's Cost Estimate JS plugin takes care of
+      all of the pieces and then places them in an easy-to-read format for your project."
+    renders: >-
+      A patient-facing out-of-pocket estimate — deductible, coinsurance, copayment and
+      stop-loss — assembled from a Coverage/Cost Estimates response.
+    integration: one line of JavaScript
+    demo: >-
+      Eligible states a live JSFiddle demo exists ("There is even a demo live on JS
+      Fiddle so you can work with and edit a live version in real time"). No public
+      JSFiddle URL is linked from any readable page.
+    related_api: eligible:payment-estimation
+  - id: eligible-js
+    name: Eligible.js
+    family: Price Transparency
+    kind: loader / umbrella library
+    description: >-
+      Listed in Eligible's site footer under "For Developers" as a first-class developer
+      surface alongside Webhooks, API Monitoring and Documentation. The footer link
+      resolves to the ML Powered Estimations documentation, which is gated.
+    docs: https://eligible.com/docs/price-transparency/ml-powered-estimations
+    docs_status: 404
+    confidence: medium
+    note: >-
+      Named by the vendor, but whether Eligible.js is the loader for the two plugins
+      above or a third distinct library cannot be determined from public pages.
+loader:
+  script_url: null
+  cdn: null
+  npm_package: null
+  note: >-
+    No script tag, CDN host or npm package for any of these components was found. They
+    are not in the npm registry under the eligible maintainer accounts (which publish
+    only eligible-node), and github.com/eligible and github.com/EligibleAPI contain no
+    first-party component repository — both orgs now hold only forks of third-party
+    projects. A consumer cannot obtain, pin or audit these components without an account.
+authentication:
+  key: publishable_key
+  note: >-
+    Eligible's FAQ is explicit that the publishable key exists precisely for this
+    class of client-side use: "The publishable key is used in certain libs for
+    identifying the customer, but the API key is used for authentication across all the
+    API." Sending the publishable key to the REST API is the documented cause of a 401.
+  detail: authentication/eligible-authentication.yml
+summary:
+  count: 3
+  with_public_loader: 0
+  with_public_docs: 0
+evidence:
+  - url: https://eligible.com/community/eligible-developer-tools-2/
+    status: 200
+  - url: https://eligible.com/docs/claimsjs-overview
+    status: 403
+  - url: https://eligible.com/docs/price-transparency/ml-powered-estimations
+    status: 404
+  - url: https://github.com/eligible
+    status: 200

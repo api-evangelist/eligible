@@ -1,0 +1,103 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://status.eligible.com/ (+ its Statuspage API at /api/v2/summary.json, probed
+  anonymously 2026-08-14), https://eligible.com/community/technical-features-faq/, and
+  the published CHANGELOG of rubygems.org eligible 3.0.3.
+versioning:
+  scheme: uri-path
+  current: v1.5
+  base: https://gds.eligibleapi.com/v1.5
+  stable_since: '2016'
+  policy_url: https://eligible.com/community/technical-features-faq/
+  policy: >-
+    "We keep the version of the API in the query string, so that version will not
+    change and your code should not break because of API changes. Eligible's
+    documentation will reflect new releases, and we will always notify our clients
+    when new releases are available." A pinned-version compatibility promise, with
+    release notification by direct customer contact rather than by a public changelog.
+deprecation:
+  api_policy: null
+  sunset_header: false
+  note: >-
+    NO PUBLISHED API DEPRECATION POLICY and no RFC 8594 Sunset/Deprecation header
+    support in either first-party client. What Eligible does publish is a DATA
+    deprecation policy, for payer identifiers — a different thing, and not scored as
+    an API deprecation policy here.
+  data_deprecation:
+    subject: payer_id
+    policy: >-
+      Eligible consolidated onto one standardized payer ID per payer (previously a
+      payer could carry different IDs per transaction type). Superseded IDs are
+      retained indefinitely: "we continue to support our deprecated payer list. Our
+      customers can still use deprecated payer IDs. Our system will convert the
+      deprecated payer IDs and process the transaction as expected." Responses carry
+      both `payer_id` and `deprecated_payer_id`. Deprecated IDs are hidden from
+      https://eligible.com/network but remain live.
+    migration_advice: >-
+      Eligible recommends upgrading to the latest payer list to gain the newer payer
+      management endpoints (payer listing, status, webhooks).
+    source: https://eligible.com/community/technical-features-faq/
+status_page:
+  url: https://status.eligible.com
+  platform: Atlassian Statuspage
+  machine_readable:
+    status: https://status.eligible.com/api/v2/status.json
+    summary: https://status.eligible.com/api/v2/summary.json
+    history: https://status.eligible.com/history.rss
+  probed: '2026-08-14'
+  indicator_at_probe: none (All Systems Operational)
+  open_incidents_at_probe: 0
+  subscribe: email, SMS, RSS
+  components:
+    - Eligible API
+    - Eligible Sandbox
+    - Eligible.com
+    - Insurance Connections
+    - Amazon EC2 (us-east)
+    - Amazon DNS (Route 53)
+    - Amazon S3
+    - Amazon Cognito
+    - Zendesk (email support)
+    - Slack
+    - 3rd-party Services
+  note: >-
+    The best-instrumented public surface Eligible has. It is also a useful
+    architecture disclosure: the components confirm a separately-tracked Sandbox
+    environment, an "Insurance Connections" payer-network tier, and AWS us-east
+    hosting with Cognito in the identity path.
+sla:
+  url: null
+  uptime_target: null
+  note: No public SLA or uptime commitment was found; commercial terms are behind the access request.
+changelog:
+  api_changelog_url: null
+  note: >-
+    Eligible publishes no dated API changelog. Release notification is by direct
+    customer contact ("we will always notify our clients"). The only public dated
+    release record is the SDK changelog shipped inside the Ruby gem, which is a client
+    changelog and not an API one.
+  sdk_release_cadence:
+    pattern: >-
+      Roughly one release per January across the Ruby, Node, .NET and Java clients.
+      The Ruby CHANGELOG shows why: almost every entry reads "Updated pinned GDS SSL
+      certificate". The clients pin the API host's certificate fingerprint, so the
+      annual release is a certificate rotation, not a feature release.
+    entries:
+      - version: 3.0.3
+        date: '2026-01-15'
+        highlights: Updated pinned GDS SSL certificate
+      - version: 3.0.2
+        date: '2025-01-20'
+        highlights: Updated pinned GDS SSL certificate
+      - version: 3.0.1
+        date: '2025-01-16'
+        highlights: Updated pinned GDS SSL certificate
+      - version: 3.0.0
+        date: '2024-01-17'
+        highlights: Add support for Ruby 3 versions
+      - version: 2.9.15
+        date: '2024-01-11'
+        highlights: Updated pinned GDS SSL certificate
+    source: rubygems:eligible@3.0.3 CHANGELOG.md
+deprecated_operations: []

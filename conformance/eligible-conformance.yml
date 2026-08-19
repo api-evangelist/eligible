@@ -1,0 +1,168 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://eligible.com/compliance (served meta description: "Industry proven, we are
+  certified by: SOC2, HiTrust, CAQH, NIST."), Eligible's own certification
+  announcements in blogs/ (2017-01-04, 2017-03-10, 2017-11-09, 2018-01-18,
+  2022-02-16, 2024-09-17, 2026-06-23), and the X12/EDI surface documented in
+  https://eligible.com/community/technical-features-faq/ and implemented in
+  rubygems.org eligible 3.0.3.
+note: >-
+  Eligible is a HIPAA-covered clearinghouse, so its conformance story is a healthcare
+  operating-rules story rather than a web-API-standards story. It holds real,
+  dated, third-party-attested certifications for the transaction rails — and holds
+  essentially nothing on the API-contract side, because it publishes no
+  machine-readable specification at all. Both halves are recorded below.
+standards:
+  - id: caqh-core-phase-i
+    name: CAQH CORE Phase I Certification
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-achieves-phase-ii-iii-caqh-core-certification/
+    date: '2017-03-10'
+  - id: caqh-core-phase-ii
+    name: CAQH CORE Phase II Certification
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-achieves-phase-ii-iii-caqh-core-certification/
+    date: '2017-03-10'
+  - id: caqh-core-phase-iii
+    name: CAQH CORE Phase III Certification
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-achieves-phase-ii-iii-caqh-core-certification/
+    date: '2017-03-10'
+  - id: caqh-core-phase-iv
+    name: CAQH CORE Phase IV Certification
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-achieves-phase-i-ii-iii-and-iv-caqh-core-certification/
+    date: '2024-09-17'
+    note: >-
+      CAQH CORE is the operating-rule regime mandated under ACA Section 1104 for
+      eligibility (270/271), claim status (276/277), and EFT/ERA. Phase IV covers
+      claims, enrollment and premium payment. Holding all four phases is the strongest
+      single conformance claim in this file.
+  - id: hitrust-csf
+    name: HITRUST CSF Certification
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-attains-hitrust-csf-certification/
+    date: '2022-02-16'
+    assessor: EHNAC
+  - id: hitrust-r2
+    name: HITRUST r2 Certification
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-achieves-hitrust-r2-certification/
+    date: '2026-06-23'
+    scope: Platform Services System
+    note: The current certification; supersedes the 2017 and 2022 HITRUST milestones.
+  - id: nist-csf-1.1
+    name: NIST Cybersecurity Framework v1.1
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-achieves-hitrust-r2-certification/
+    date: '2026-06-23'
+  - id: soc2
+    name: SOC 2
+    conforms: true
+    evidence: https://eligible.com/blog/soc2-certification-exceptional-year-without-exceptions/
+    date: '2017-11-09'
+    note: Reported as a period with no exceptions. Not re-announced publicly since.
+  - id: ehnac-hnap
+    name: EHNAC Healthcare Network Accreditation Program
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-achieves-ehnac-cloud-enabled-accreditation/
+    date: '2018-01-18'
+  - id: ehnac-ceap
+    name: EHNAC Cloud-Enabled Accreditation Program
+    conforms: true
+    evidence: https://eligible.com/blog/eligible-achieves-ehnac-cloud-enabled-accreditation/
+    date: '2018-01-18'
+  - id: hipaa
+    name: HIPAA
+    conforms: true
+    evidence: >-
+      Eligible operates as a healthcare clearinghouse and states in its published FAQ
+      that eligibility responses are stored, encrypted client-side and server-side at
+      rest and in transit, "as per HIPAA's reproducible requirement".
+    source: https://eligible.com/community/technical-features-faq/
+  - id: x12-270-271
+    name: ASC X12N 270/271 Eligibility Benefit Inquiry and Response
+    conforms: true
+    evidence: >-
+      Coverage requests return the raw 271 on `format=x12`; the Eligible tracking ID
+      is carried in the 271 TRN02 segment and reject codes are surfaced as AAA_xx.
+    source: https://eligible.com/community/technical-features-faq/
+  - id: x12-276-277
+    name: ASC X12N 276/277 Claim Status Inquiry and Response
+    conforms: true
+    evidence: Claim status and acknowledgement endpoints (/claims/acknowledgements.json, claim status polling).
+  - id: x12-837
+    name: ASC X12N 837 Health Care Claim (professional and institutional)
+    conforms: true
+    evidence: >-
+      Claim submission (/claims.json) with NM1-segment and place-of-service rejection
+      semantics documented in Eligible's Common Errors FAQ.
+    source: https://eligible.com/community/common-errors-faq/
+  - id: x12-835
+    name: ASC X12N 835 Health Care Claim Payment/Advice
+    conforms: true
+    evidence: Remittance/payment reports (/claims/payment_reports.json, /payment/status.json).
+  - id: icd-10
+    name: ICD-10-CM / ICD-9 crosswalk
+    conforms: true
+    evidence: >-
+      Dedicated ICD endpoints for search, describe and ICD-9<->ICD-10 crosswalk
+      (/icds/{type}, /icds/{type}/describe/{code}, /icds/{type}/crosswalk/{code}).
+    source: rubygems:eligible@3.0.3 lib/eligible/icd.rb
+  - id: nucc-taxonomy
+    name: NUCC Health Care Provider Taxonomy Code Set
+    conforms: true
+    evidence: https://eligible.com/resources/health-care-provider-taxonomy-code-set.json
+  - id: npi
+    name: National Provider Identifier
+    conforms: true
+    evidence: Provider NPI is a required parameter on coverage and claims requests.
+  - id: openapi
+    name: OpenAPI
+    conforms: false
+    evidence: No OpenAPI, Swagger, GraphQL SDL, AsyncAPI or Postman collection is published anywhere.
+  - id: fhir-r4
+    name: HL7 FHIR R4
+    conforms: false
+    evidence: >-
+      No FHIR resource shapes, /fhir base, CapabilityStatement or FHIR terminology
+      appear in the first-party clients or in the public documentation. Eligible's
+      surface is X12-native, not FHIR-native — notable for a 2026 US healthcare data
+      exchange given CMS Interoperability rules.
+  - id: oauth2
+    name: OAuth 2.0
+    conforms: false
+    evidence: >-
+      API-key authentication only. No authorization server, token endpoint, scopes or
+      refresh flow in either first-party client or in the docs.
+  - id: oidc
+    name: OpenID Connect
+    conforms: false
+    evidence: /.well-known/openid-configuration returns 403 on every host.
+  - id: rfc9457-problem-details
+    name: RFC 9457 Problem Details
+    conforms: false
+    evidence: >-
+      Vendor envelope `{"error"...}` / `{"errors":[...]}`; no application/problem+json.
+      The observed 401 returns a bare string under an application/json content type.
+  - id: rfc9116-security-txt
+    name: RFC 9116 security.txt
+    conforms: false
+    evidence: /.well-known/security.txt returns 403 on eligible.com and gds.eligibleapi.com.
+  - id: rfc8594-sunset-header
+    name: RFC 8594 Sunset header
+    conforms: false
+    evidence: No Sunset/Deprecation header handling in either first-party client.
+summary:
+  certifications_held: 10
+  operating_rule_regimes: [CAQH CORE Phase I-IV, HIPAA, EHNAC HNAP, EHNAC CEAP]
+  security_frameworks: [HITRUST r2, NIST CSF v1.1, SOC 2]
+  edi_transaction_sets: ['270/271', '276/277', '837', '835']
+  api_standards_conformed: 0
+  observation: >-
+    Ten dated third-party certifications on the transaction rails, and zero
+    machine-readable API standards on the contract. Eligible is compliance-strong and
+    contract-invisible — the certifications are exactly the thing an integrator cannot
+    verify from the API itself, and the contract is exactly the thing an integrator
+    cannot read at all.

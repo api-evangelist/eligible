@@ -1,0 +1,259 @@
+generated: '2026-08-15'
+method: derived
+source: >-
+  rubygems.org eligible 3.0.3 (the complete lib/eligible/*.rb resource layer, downloaded
+  and unpacked 2026-08-15) cross-read against Eligible's four PUBLIC payer JSON
+  documents at https://eligible.com/resources/payers/*.json and its published Technical
+  & Features FAQ.
+note: >-
+  DERIVED WITHOUT AN OPENAPI. Eligible publishes no machine-readable contract, so the
+  entity graph below is reconstructed from the only complete public description of the
+  surface that exists: the vendor's own Ruby client. Every path is quoted from that
+  client's source, not guessed. Field-level detail is thin by necessity — the client
+  passes params through as hashes and does not declare schemas — EXCEPT for the payer
+  entities, whose full field set IS public because Eligible serves the payer directories
+  as unauthenticated JSON.
+base_url: https://gds.eligibleapi.com/v1.5
+identifier_conventions:
+  path_suffix: >-
+    Most resource paths carry an explicit `.json` suffix (Rails-era). Exceptions that do
+    not: /x12, /tickets, /payers/search_options, /icds/{type},
+    /enrollment_npis/{id}/original_signature_pdf, /enrollment_npis/{id}/received_pdf,
+    /claims/{reference_id}/payment_reports.
+  primary_keys:
+    payer_id: Eligible-assigned payer identifier, string, zero-padded (e.g. "00001").
+    deprecated_payer_id: Superseded payer identifier; still accepted and translated server-side.
+    npi: National Provider Identifier (billing and rendering must differ on a claim).
+    reference_id: Eligible claim reference, the key for acknowledgements and payment reports.
+    control_number: Payer-assigned claim control number, returned on payment reports and accepted acks.
+    tracking_id: 13-character per-transaction identifier; also carried in X12 271 TRN02.
+    enrollment_npi_id: Enrollment record identifier.
+    customer_id, lockbox_id, key_id, id: Resource identifiers on the account-management surface.
+entities:
+  - name: Payer
+    resource: /payers.json
+    description: An insurance company Eligible can transact with, and its per-transaction capabilities.
+    public_document: https://eligible.com/resources/payers/eligibility.json
+    record_count: 414
+    fields:
+      - payer_id
+      - names (array of alternate payer names)
+      - pass_through_fee (USD, per transaction)
+      - enrollment_required (bool)
+      - enrollment_mandatory_fields
+      - signature_required (bool)
+      - blue_ink_required (bool)
+      - secondary_supported (bool)
+      - reports_generated (bool)
+      - message
+      - created_at
+      - updated_at
+    note: >-
+      The only entity in this API with a fully public, machine-readable schema, because
+      Eligible serves the directory itself as JSON.
+  - name: ClaimsPayer
+    resource: /payers.json (claims transaction type)
+    description: The claims-side payer directory. Same shape as Payer, different population.
+    public_document: https://eligible.com/resources/payers/claims/medical.json
+    record_count: 1643
+  - name: PayerSearchOptions
+    resource: /payers/{payer_id}/search_options
+    description: >-
+      The accepted combinations of member-identity fields for a coverage request against
+      one payer. Published as a map of payer_id to an array of accepted field-name arrays.
+    public_document: https://eligible.com/resources/payers/eligibility/search-options.json
+    record_count: 414
+    example_combination: [member_id, member_first_name, member_last_name, member_dob]
+    note: >-
+      Eligible states every payer accepts subscriber ID, first name, last name and date
+      of birth; this document records the payer-specific supersets (SSN, address, and so on).
+    belongs_to: Payer (via payer_id)
+  - name: PassthroughFee
+    resource: pricing only (no API endpoint)
+    description: Per-payer, per-transaction fee Eligible passes through from the insurer.
+    public_documents:
+      - https://eligible.com/resources/payers/coverage_passthrough.json
+      - https://eligible.com/resources/payers/claims_passthrough.json
+      - https://eligible.com/resources/payers/payment_status_passthrough.json
+      - https://eligible.com/resources/payers/payment_reports_passthrough.json
+    fields: [payer_ids, payer_name, pass_through_fee, effective_from, claim_type]
+    record_count: 632
+    belongs_to: Payer (via payer_ids)
+  - name: Coverage
+    resource: /coverage/all.json
+    description: A real-time 270/271 eligibility and benefits response for one member against one payer.
+    requires: [npi, payer_id, member identity]
+    alternate_representation: X12 271 via format=x12
+    has_many: [CostEstimate]
+  - name: Demographic
+    resource: /demographic/all.json
+    description: Demographic verification for a member.
+  - name: MedicareCoverage
+    resource: /medicare/coverage.json
+    description: Medicare-specific coverage inquiry.
+  - name: CostEstimate
+    resource: /coverage/cost_estimates.json
+    description: >-
+      Patient out-of-pocket estimate — deductible, coinsurance, copayment, stop loss —
+      calculated from a coverage response.
+    belongs_to: Coverage
+  - name: RiskAssessment
+    resource: /risk_assessments/criteria.json
+    description: Risk-scoring surface with criteria, cost estimates and fetch operations.
+  - name: Claim
+    resource: /claims.json
+    description: An 837 professional or institutional claim submitted to a payer.
+    primary_key: reference_id
+    has_many: [ClaimAcknowledgement, PaymentReport]
+    requires: [billing NPI, rendering NPI, payer_id, diagnosis codes, place of service]
+  - name: ClaimAcknowledgement
+    resource: /claims/{reference_id}/acknowledgements.json
+    description: 277-class acceptance or rejection of a submitted claim.
+    belongs_to: Claim (via reference_id)
+    delivery: also pushed over webhook
+  - name: PaymentReport
+    resource: /claims/{reference_id}/payment_reports
+    description: 835 remittance advice for a claim.
+    belongs_to: Claim (via reference_id)
+    delivery: also pushed over webhook
+  - name: PaymentStatus
+    resource: /payment/status.json
+    description: 276/277 claim status. Eligible polls this on the consumer's behalf.
+  - name: Enrollment
+    resource: /enrollment_npis.json
+    description: >-
+      A trading-partner enrollment linking one provider NPI to one payer so transactions
+      can flow. The gating prerequisite for claims and, for many payers, for eligibility.
+    primary_key: enrollment_npi_id
+    has_one: [OriginalSignaturePdf, ReceivedPdf]
+    belongs_to: Payer (via payer_id)
+  - name: OriginalSignaturePdf
+    resource: /enrollment_npis/{enrollment_npi_id}/original_signature_pdf
+    description: The wet/blue-ink signature document some payers require for enrollment.
+    belongs_to: Enrollment
+    operations: [get, post, put, delete, download]
+  - name: ReceivedPdf
+    resource: /enrollment_npis/{enrollment_npi_id}/received_pdf
+    description: The payer's returned enrollment document.
+    belongs_to: Enrollment
+  - name: Precert
+    resource: /precert/inquiry.json
+    description: Pre-certification / prior-authorization inquiry, creation and requirement check.
+    operations: [inquiry, create, require]
+  - name: Referral
+    resource: /referral/inquiry.json
+    description: Referral inquiry and creation.
+  - name: Customer
+    resource: /customers.json
+    description: A sub-account or tenant under the API key holder.
+    has_many: [Enrollment]
+  - name: Ticket
+    resource: /tickets
+    description: Support ticket, with a comments sub-resource. Support is itself an API surface.
+    has_many: [TicketComment]
+  - name: PublicKey
+    resource: /public_keys.json
+    description: >-
+      An RSA public key the consumer registers with Eligible so PHI can be encrypted to
+      it. Client generates a 4096-bit pair locally; only the public half is uploaded.
+    has_many: [Lockbox]
+    operations: [list, get, post, activate]
+  - name: Lockbox
+    resource: /lockboxes.json
+    description: >-
+      An envelope of encrypted data. The client fetches {encrypted_data, encrypted_key},
+      RSA-decrypts the AES key with the locally-held private key, then AES-decrypts the
+      payload. End-to-end encryption for PHI, done in the client.
+    belongs_to: PublicKey
+    fields: [encrypted_data, encrypted_key]
+  - name: SessionToken
+    resource: /session_tokens/create.json
+    description: Short-lived credential for browser/mobile contexts, minted and revoked over the API.
+  - name: Icd
+    resource: /icds/{type}
+    description: ICD code search, description lookup, and ICD-9 to ICD-10 crosswalk.
+    operations: [list, describe, crosswalk]
+  - name: VisitType
+    resource: /visit_types.json
+    description: Visit type reference, plus a per-insurance-company id mapping.
+  - name: ProviderModel
+    resource: /provider_models.json
+    description: Provider model reference data.
+  - name: CardScan
+    resource: /card_scans.json
+    description: OCR of an insurance card image. Multipart file upload.
+  - name: X12
+    resource: /x12
+    description: >-
+      Raw EDI passthrough. Submit an X12 transaction directly instead of using the JSON
+      surface. The escape hatch under the whole API.
+  - name: CalculatorDeployUrl
+    resource: /calculator_deploy_urls.json
+    description: Deployment URLs for Eligible's embeddable calculator component.
+    related: components/eligible-components.yml
+relationships:
+  - from: Claim
+    to: ClaimAcknowledgement
+    type: has_many
+    via: reference_id
+  - from: Claim
+    to: PaymentReport
+    type: has_many
+    via: reference_id
+  - from: Enrollment
+    to: OriginalSignaturePdf
+    type: has_one
+    via: enrollment_npi_id
+  - from: Enrollment
+    to: ReceivedPdf
+    type: has_one
+    via: enrollment_npi_id
+  - from: Enrollment
+    to: Payer
+    type: belongs_to
+    via: payer_id
+  - from: Coverage
+    to: Payer
+    type: belongs_to
+    via: payer_id
+  - from: Coverage
+    to: CostEstimate
+    type: has_many
+    via: coverage response
+  - from: PayerSearchOptions
+    to: Payer
+    type: belongs_to
+    via: payer_id
+  - from: PassthroughFee
+    to: Payer
+    type: belongs_to
+    via: payer_ids
+  - from: Lockbox
+    to: PublicKey
+    type: belongs_to
+    via: key_id
+  - from: Ticket
+    to: TicketComment
+    type: has_many
+    via: id
+  - from: Customer
+    to: Enrollment
+    type: has_many
+    via: customer_id
+summary:
+  entities: 28
+  operations_reconstructed: 65
+  resource_classes_in_client: 22
+  entities_with_public_schema: 4
+  observation: >-
+    Sixty-five operations across twenty-eight entities, and public field-level schemas
+    for exactly four of them — all four being payer reference data rather than
+    transactional objects. The workflow spine is Enrollment -> Coverage -> Claim ->
+    ClaimAcknowledgement -> PaymentReport, and enrollment is the gate: a claim cannot
+    flow until the provider NPI is enrolled with the payer, which is why the 401 on this
+    API means either "bad key" or "not enrolled" and does not distinguish them.
+cross_links:
+  conventions: conventions/eligible-conventions.yml
+  errors: errors/eligible-error-codes.yml
+  webhooks: asyncapi/eligible-webhooks.yml
+  packages: packages/eligible-packages.yml

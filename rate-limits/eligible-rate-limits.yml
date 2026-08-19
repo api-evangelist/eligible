@@ -4,106 +4,78 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Eligible
 providerId: eligible
 created: '2026-05-04'
-modified: '2026-05-04'
+modified: '2026-08-15'
+generated: '2026-08-15'
+method: searched
+reconciled: true
+source: >-
+  https://eligible.com/pricing, https://eligible.com/community/technical-features-faq/,
+  and the transport layer of Eligible's own first-party clients (rubygems.org eligible
+  3.0.3 lib/eligible.rb, npm eligible-node 1.2.9 lib/http/client.js), read 2026-08-15.
+note: >-
+  REPLACES A SCAFFOLD. Until this pass this file asserted per-minute and per-month
+  limits (10/min free, 100/min professional, 1000/min enterprise) and a full set of
+  X-RateLimit-* response headers, none of which Eligible publishes or returns. Eligible
+  publishes NO rate limits. What it publishes instead is a per-transaction PRICE, which
+  is a different control: the API is metered commercially rather than throttled
+  technically, and an over-running consumer is billed rather than 429'd. That is the
+  honest finding and it is recorded as a zero, not padded.
+limit_count: 0
+limits: []
+headers:
+  limit: null
+  remaining: null
+  reset: null
+  retryAfter: null
+  policy: null
+  requestId: X-Request-Id
+  headers_note: >-
+    Neither first-party client reads or handles RateLimit-*, X-RateLimit-* or
+    Retry-After, and neither implements backoff. The only correlation header observed on
+    a live anonymous response from https://gds.eligibleapi.com/v1.5/payers.json was
+    X-Request-Id. Eligible's own transaction correlator (tracking_id) is a BODY field,
+    not a header — see conventions/eligible-conventions.yml.
+responseCodes:
+  throttled: null
+  quotaExceeded: null
+  note: >-
+    No 429 semantics are documented and none were observed. The documented failure modes
+    are 400, 401 and 404 (see errors/eligible-error-codes.yml) plus payer-side AAA_4x
+    "system not responding" rejects, which are the closest thing to a back-pressure
+    signal on this API and arrive inside a 200 body.
+commercial_metering:
+  in_place_of_limits: true
+  description: >-
+    Volume is governed by price, not by a throttle. Eligible's published pricing charges
+    excess real-time payment status and eligibility inquiries at 5 cents per transaction
+    and excess cost estimates at 25 cents per transaction, each plus the payer
+    passthrough fee, with ten eligibility/cost-estimation calls included per claim on
+    the Patient Clearance product.
+  source: https://eligible.com/pricing
+  detail: plans/eligible-plans-pricing.yml
+client_timeouts:
+  open_timeout_seconds: 30
+  read_timeout_seconds: 80
+  note: >-
+    The defaults Eligible ships in its own Ruby client. An 80-second read timeout is the
+    only quantitative statement about request pacing the vendor makes anywhere, and it
+    reflects payer round-trip latency rather than a limit Eligible imposes.
+  source: rubygems:eligible@3.0.3 lib/eligible.rb
+evidence:
+  - url: https://eligible.com/pricing
+    status: 200
+    finding: Per-transaction prices published; no request limits stated.
+  - url: https://gds.eligibleapi.com/v1.5/payers.json
+    status: 401
+    finding: No RateLimit-* or Retry-After headers on the response.
+  - url: https://eligible.com/docs/api
+    status: 200
+    finding: Serves the Sign In page; any limits documented in the gated reference were not readable.
 tags:
-  - Billing
-  - Eligibility
+  - Rate Limiting
   - Healthcare
   - Insurance
   - Claims
-  - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Eligible API surface. Captures per-tier quotas,
-  burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to be replaced
-  with published provider limits.
-headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
-responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
-limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Eligible Coverage API
-      - Eligible Claims API
-      - Eligible Payment Estimation API
-      - Eligible Enrollment API
-      - Eligible Payers API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Eligible Coverage API
-      - Eligible Claims API
-      - Eligible Payment Estimation API
-      - Eligible Enrollment API
-      - Eligible Payers API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Eligible Coverage API
-      - Eligible Claims API
-      - Eligible Payment Estimation API
-      - Eligible Enrollment API
-      - Eligible Payers API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Eligible Coverage API
-      - Eligible Claims API
-      - Eligible Payment Estimation API
-      - Eligible Enrollment API
-      - Eligible Payers API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Eligible Coverage API
-      - Eligible Claims API
-      - Eligible Payment Estimation API
-      - Eligible Enrollment API
-      - Eligible Payers API
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

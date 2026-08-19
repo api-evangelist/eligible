@@ -1,0 +1,130 @@
+generated: '2026-08-15'
+method: searched
+source: >-
+  https://eligible.com/community/webhooks-helper-apis/ and
+  https://eligible.com/community/eligible-dev-tools-1/ and
+  https://eligible.com/community/eligible-developer-tools-2/ (Eligible's own published
+  Developer Tools series), plus the site-wide footer navigation which links
+  https://eligible.com/docs/developer-tools/webhooks under "For Developers".
+docs: https://eligible.com/docs/introduction-to-webhooks
+asyncapi: false
+asyncapi_note: >-
+  NO ASYNCAPI DOCUMENT EXISTS. Eligible publishes no AsyncAPI, no event schema and no
+  machine-readable event catalog anywhere, and the pages that describe the webhook
+  payloads sit behind the account login. This artifact therefore records the webhook
+  SURFACE — which Eligible documents publicly and in detail on its own community site —
+  and does not invent the message schemas. Every event below is named in Eligible's own
+  published prose; none is inferred.
+note: >-
+  Webhooks are not a convenience on this API, they are the primary delivery mechanism.
+  Eligible states the reason plainly: "Much of what happens in healthcare is
+  asynchronous. While certain API calls, such as our Coverage endpoint, can return data
+  instantly, others will require processing time on the payer's side. Normally you would
+  need to continue polling in order to see when the information was updated, but
+  webhooks handle this work for you." Batch submission and claim adjudication both
+  return their results only over webhooks.
+transport:
+  style: HTTP callback to a consumer-hosted endpoint
+  direction: provider-to-consumer
+  subscription_management: >-
+    Configured in the Eligible account console. Eligible also documents per-payer
+    webhook capability through the Payers endpoint, and its FAQ notes that upgrading to
+    the standardized payer list is what unlocks "our new payer list management endpoints
+    such as payer listing, status, webhooks".
+  security: not publicly documented (signature scheme, retry policy and delivery
+    guarantees are all inside the gated reference)
+events:
+  - id: enrollment.response
+    name: Enrollment response
+    trigger: A trading-partner enrollment is submitted.
+    delivery: webhook
+    evidence: >-
+      "Our sandbox allows you to submit an enrollment and immediately receive a webhook
+      response."
+    source: https://eligible.com/community/eligible-dev-tools-1/
+    related_api: eligible:enrollment
+  - id: claim.acknowledgement
+    name: Claim acknowledgement
+    trigger: A submitted 837 claim is acknowledged or rejected by the payer.
+    delivery: webhook (also retrievable at GET /claims/acknowledgements.json)
+    evidence: >-
+      "When submitting a claim, the sandbox automatically generates Claim
+      Acknowledgements and Payment reports. These are also delivered via webhook, or
+      accessible through their respective APIs."
+    source: https://eligible.com/community/eligible-dev-tools-1/
+    related_api: eligible:claims
+  - id: claim.payment_report
+    name: Payment report (835 remittance)
+    trigger: A payer issues a remittance / payment advice for a claim.
+    delivery: webhook (also retrievable at GET /claims/payment_reports.json)
+    source: https://eligible.com/community/eligible-dev-tools-1/
+    related_api: eligible:claims
+  - id: claim.status_changed
+    name: Claim status change
+    trigger: >-
+      Eligible polls the payer's 276/277 claim status daily for every outstanding claim
+      in adjudication and emits an event ONLY when the status has actually changed.
+    delivery: webhook
+    evidence: >-
+      "we will automatically check the payment status every day for outstanding claims
+      in adjudication, then push a webhook event to our customers only if the status had
+      changed."
+    source: https://eligible.com/community/eligible-developer-tools-2/
+    docs: https://eligible.com/docs/claim-webhooks
+    related_api: eligible:claims
+    note: >-
+      Polling cadence is a commercial decision, not a technical one: Eligible polls
+      daily for payers with no passthrough fee, and on a consumer-chosen interval for
+      payers that charge one, "so that there are no surprise charges".
+  - id: batch.result
+    name: Batch job result
+    trigger: >-
+      A batch submission completes. Batch is offered for Real-Time Eligibility, Coverage
+      and Estimated Primary Payer.
+    delivery: webhook
+    batch_endpoints:
+      - POST /coverage/all/batch.json
+      - POST /demographic/all/batch.json
+      - POST /medicare/coverage/batch.json
+      - GET /batch/payment/status.json
+    source: https://eligible.com/community/webhooks-helper-apis/
+    docs: https://eligible.com/docs/batch-events
+  - id: payer.status_changed
+    name: Payer status change
+    trigger: A payer connection's status or capability changes.
+    delivery: webhook
+    evidence: >-
+      Eligible's FAQ lists "payer listing, status, webhooks" among the endpoints
+      unlocked by the standardized payer list.
+    source: https://eligible.com/community/technical-features-faq/
+    related_api: eligible:payers
+    confidence: medium
+testing:
+  sandbox_generates_events: true
+  detail: sandbox/eligible-sandbox.yml
+  tutorials: https://eligible.com/docs/testing-webhooks
+  note: >-
+    Eligible publishes tutorials on standing up a test server to receive webhooks, and
+    its sandbox synthesizes acknowledgements and payment reports so the asynchronous
+    half of the integration can be exercised without a live payer.
+coverage:
+  events_named: 6
+  events_with_published_schema: 0
+  gap: >-
+    Six event types are named publicly and none has a public payload schema. The
+    payloads, the signature scheme, the retry policy and the delivery guarantees are all
+    inside https://eligible.com/docs, which serves a Sign In page. For an API whose
+    primary result channel is the webhook, that is the single largest machine-readability
+    gap in this profile — larger than the missing OpenAPI, because the REST surface can
+    at least be reconstructed from the first-party clients and the event surface cannot.
+evidence:
+  - url: https://eligible.com/community/webhooks-helper-apis/
+    status: 200
+  - url: https://eligible.com/community/eligible-dev-tools-1/
+    status: 200
+  - url: https://eligible.com/community/eligible-developer-tools-2/
+    status: 200
+  - url: https://eligible.com/docs/introduction-to-webhooks
+    status: 403
+  - url: https://eligible.com/docs/developer-tools/webhooks
+    status: 404

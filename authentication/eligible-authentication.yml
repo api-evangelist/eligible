@@ -1,0 +1,110 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://eligible.com/community/technical-features-faq/ (Eligible's published
+  Technical & Features FAQ) cross-read against the request layer of Eligible's own
+  first-party clients: rubygems.org eligible 3.0.3 (lib/eligible.rb) and
+  registry.npmjs.org eligible-node 1.2.9 (lib/http/client.js, lib/http/config.js).
+docs: https://eligible.com/community/technical-features-faq/
+note: >-
+  DERIVED FROM FIRST-PARTY CLIENT SOURCE, NOT FROM AN OPENAPI. Eligible publishes no
+  machine-readable specification, and its API reference sits behind an account login
+  (https://eligible.com/docs serves a "Sign In" page). Everything below is read out
+  of the vendor's own published SDKs and its own public FAQ, so it describes the
+  scheme Eligible actually implements; it is not a securityScheme block harvested
+  from a spec, and it is not a guess.
+summary:
+  types: [apiKey]
+  api_key_in: [query, body, header]
+  oauth2_flows: []
+  oauth2: false
+  openid_connect: false
+  mutual_tls: false
+  bearer_token: true
+schemes:
+  - name: api_key
+    type: apiKey
+    in: query
+    parameter: api_key
+    applies_to: GET, HEAD, DELETE
+    description: >-
+      On GET/HEAD/DELETE the client appends the account API key to the query string
+      as `api_key=<key>` (together with `test=true|false`). Confirmed in
+      Eligible::request in the Ruby gem.
+    source: rubygems:eligible@3.0.3 lib/eligible.rb
+  - name: api_key
+    type: apiKey
+    in: body
+    parameter: api_key
+    applies_to: POST, PUT
+    description: >-
+      On write methods the API key is merged into the JSON request body alongside
+      `test`, rather than sent as a parameter.
+    source: rubygems:eligible@3.0.3 lib/eligible.rb
+  - name: authorization_bearer
+    type: http
+    scheme: bearer
+    in: header
+    parameter: Authorization
+    description: >-
+      The Ruby client additionally sets `Authorization: Bearer <api_key>` on every
+      request. The same key value is used; this is a header carriage of the API key,
+      not a separate OAuth token, and there is no authorization server, token
+      endpoint, refresh flow or scope set anywhere in the client or the docs.
+    source: rubygems:eligible@3.0.3 lib/eligible.rb
+  - name: session_token
+    type: apiKey
+    in: body
+    parameter: session_token
+    description: >-
+      A short-lived alternative credential. `POST /session_tokens/create.json` mints
+      one and `POST /session_tokens/revoke.json` destroys it; when a session_token is
+      supplied the client does not require the account API key. Intended for
+      browser/mobile contexts where the long-lived key must not be shipped.
+    source: rubygems:eligible@3.0.3 lib/eligible/session_token.rb
+  - name: publishable_key
+    type: apiKey
+    in: body
+    parameter: publishable_key
+    description: >-
+      A separate, non-authenticating identifier. Eligible's own FAQ is explicit: "The
+      publishable key is used in certain libs for identifying the customer, but the
+      API key is used for authentication across all the API. In all cases, use the
+      API key unless prompted for the publishable key." Sending it where the API key
+      is expected is the documented cause of a 401.
+    source: https://eligible.com/community/technical-features-faq/
+key_management:
+  issued_from: https://account.eligible.com/ ("Admin > API keys")
+  environments: [live, staging, sandbox]
+  rotation: >-
+    Keys are reset by the account holder from the admin console; Eligible documents
+    no programmatic key-rotation endpoint.
+  note: >-
+    Three distinct keys per account, one per environment. The environment is
+    additionally selected per request by the `test` parameter, which every client
+    sends on every call.
+transport:
+  tls: required
+  certificate_pinning: true
+  pinning_note: >-
+    Unusually, both first-party clients PIN the SHA-1 fingerprint of the
+    gds.eligibleapi.com leaf certificate and refuse to connect on a mismatch (Ruby:
+    Eligible.fingerprints, 7 digests; Node: FINGERPRINTS, 5 digests). This is why the
+    SDKs ship a new version roughly every January — the pinned certificate rotates
+    and an un-upgraded client stops working. It is a real operational constraint for
+    any consumer and is not documented anywhere on the public site.
+  observed_response_headers:
+    strict-transport-security: max-age=63072000; includeSubDomains; preload
+    x-frame-options: DENY
+    x-content-type-options: nosniff
+    referrer-policy: strict-origin-when-cross-origin
+    cross-origin-opener-policy: same-origin
+  observed_on: https://gds.eligibleapi.com/v1.5/payers.json
+failure_mode:
+  status: 401
+  content_type: application/json
+  body: Could not authenticate you. Please re-try with a valid API key.
+  probed: '2026-08-14'
+  note: >-
+    Observed anonymously. The body is a bare string served under an
+    application/json content type, not a JSON object — see errors/.

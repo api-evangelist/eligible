@@ -1,0 +1,115 @@
+generated: '2026-08-15'
+method: searched
+source: >-
+  https://eligible.com/community/eligible-dev-tools-1/ (Eligible's own "Interactive
+  Sandbox" description), https://eligible.com/community/technical-features-faq/,
+  https://status.eligible.com/ (which tracks "Eligible Sandbox" as a first-class
+  component), and the environment/test-flag handling in the first-party clients
+  rubygems.org eligible 3.0.3 and npm eligible-node 1.2.9.
+docs: https://eligible.com/docs/testing-enrollments
+note: >-
+  Eligible ships a real sandbox and describes it publicly, but publishes NO test
+  identifiers, member IDs, payer IDs or fixture values on any readable page. Nothing
+  below is invented: where Eligible names a test value we record it, and where it does
+  not we say so. The sandbox is credential-gated — you need a sandbox API key from an
+  account, and accounts are waitlisted.
+modes:
+  selector: test
+  style: request parameter, sent on EVERY request by both first-party clients
+  values: ['true', 'false']
+  default: 'false'
+  note: >-
+    The mode is not a separate hostname and not a key prefix. It is a boolean parameter
+    merged into the query string on GET/HEAD/DELETE and into the JSON body on POST/PUT,
+    alongside the API key. Both clients default it to false, so a consumer who forgets
+    to set it is in production.
+  source: rubygems:eligible@3.0.3 lib/eligible.rb
+environments:
+  list:
+    - name: live
+      key: live API key
+      purpose: Production transactions against real payers.
+    - name: staging
+      key: staging API key
+      purpose: Pre-production verification.
+    - name: sandbox
+      key: sandbox API key
+      purpose: Simulated payer-provider interactions.
+  key_issuance: 'https://account.eligible.com/ (Admin > API keys)'
+  evidence: >-
+    "The client needs to hit reset on their live, staging or sandbox key from your
+    www.eligible.com account > Admin > API keys."
+  source: https://eligible.com/community/technical-features-faq/
+  note: >-
+    Three distinct keys per account, one per environment, PLUS the per-request `test`
+    flag. The two mechanisms are independent and Eligible does not document how they
+    interact — an operationally significant ambiguity on an API that submits real claims.
+base_url: https://gds.eligibleapi.com/v1.5
+base_url_note: One host for every environment; the environment is selected by credential and flag, not by hostname.
+capabilities:
+  - id: simulated-payer-interactions
+    description: >-
+      "we developed our sandbox to simulate real payer-provider interactions" — the
+      sandbox stands in for the payer, so the asynchronous half of the workflow can be
+      exercised end to end without waiting on a real insurer.
+  - id: immediate-enrollment-webhook
+    description: >-
+      "Our sandbox allows you to submit an enrollment and immediately receive a webhook
+      response." Collapses a workflow that takes days in production into a single call.
+  - id: synthetic-claim-artifacts
+    description: >-
+      "When submitting a claim, the sandbox automatically generates Claim
+      Acknowledgements and Payment reports. These are also delivered via webhook, or
+      accessible through their respective APIs."
+  - id: failure-path-fixtures
+    description: >-
+      "We even created different test cases that reflect real-world scenarios, like
+      rejected and denied claims, so developers can test their applications with the
+      closest data to production as possible." Eligible does not publish which inputs
+      trigger which case; the trigger table is inside the gated reference.
+  - id: webhook-test-tooling
+    description: Published tutorials on standing up a test server to receive webhooks.
+    docs: https://eligible.com/docs/testing-webhooks
+test_values:
+  published: false
+  cards: null
+  member_ids: null
+  payer_ids: null
+  npis: null
+  triggers: null
+  note: >-
+    No magic member ID, test NPI, test payer ID or trigger value appears on any publicly
+    readable Eligible page or in either first-party client. This is the material
+    difference between Eligible's sandbox and a reference sandbox such as Stripe's: the
+    environment exists, but a developer cannot see a single working example of it before
+    signing an agreement.
+status_tracking:
+  component: Eligible Sandbox
+  status_page: https://status.eligible.com
+  note: >-
+    The sandbox is tracked as a separately-monitored component on Eligible's public
+    Statuspage alongside "Eligible API", which is a genuine operational commitment —
+    sandbox downtime is disclosed rather than hidden.
+access:
+  self_serve: false
+  requires_account: true
+  waitlist: true
+  note: >-
+    "Access to Eligible has become more exclusive. Creating an account will add your
+    information to our waitlist. Gaining access may take a considerable amount of time."
+  source: https://eligible.com/signup
+evidence:
+  - url: https://eligible.com/community/eligible-dev-tools-1/
+    status: 200
+  - url: https://eligible.com/community/technical-features-faq/
+    status: 200
+  - url: https://status.eligible.com/api/v2/summary.json
+    status: 200
+  - url: https://eligible.com/docs/testing-enrollments
+    status: 403
+  - url: https://eligible.com/signup
+    status: 200
+cross_links:
+  authentication: authentication/eligible-authentication.yml
+  webhooks: asyncapi/eligible-webhooks.yml
+  conventions: conventions/eligible-conventions.yml

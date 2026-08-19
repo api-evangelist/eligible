@@ -1,0 +1,62 @@
+generated: '2026-08-14'
+method: searched
+probe: false
+source: https://eligible.com/compliance
+url: https://eligible.com/compliance
+note: >-
+  The mechanical probe (0-working/probe-security-programs.py) recorded no trust
+  center, and it was right to: https://eligible.com/compliance is a client-rendered
+  single-page app whose served HTML contains no body text for a keyword match to find.
+  The page IS real, and the served <head> carries the claim verbatim in its meta
+  description — "Industry proven, we are certified by: SOC2, HiTrust, CAQH, NIST." —
+  which is what this artifact is written from, together with Eligible's own dated
+  certification announcements captured in blogs/. Recorded as searched rather than
+  probed for that reason.
+certifications:
+  - HITRUST r2
+  - HITRUST CSF
+  - NIST Cybersecurity Framework v1.1
+  - SOC 2
+  - CAQH CORE Phase I
+  - CAQH CORE Phase II
+  - CAQH CORE Phase III
+  - CAQH CORE Phase IV
+  - EHNAC HNAP
+  - EHNAC CEAP
+  - HIPAA
+evidence:
+  - source: https://eligible.com/compliance
+    status: 200
+    kind: meta-description
+    keywords: [soc2, hitrust, caqh, nist]
+    note: >-
+      Page title "Compliance". Body content is JavaScript-rendered; only the head is
+      readable without executing scripts.
+  - source: https://eligible.com/security
+    status: 200
+    kind: alias
+    note: /security serves the same Compliance page.
+  - source: https://eligible.com/blog/eligible-achieves-hitrust-r2-certification/
+    kind: announcement
+    date: '2026-06-23'
+    note: HITRUST r2 + NIST CSF v1.1 for the Platform Services System.
+  - source: https://eligible.com/blog/eligible-achieves-phase-i-ii-iii-and-iv-caqh-core-certification/
+    kind: announcement
+    date: '2024-09-17'
+  - source: https://eligible.com/blog/eligible-attains-hitrust-csf-certification/
+    kind: announcement
+    date: '2022-02-16'
+  - source: https://eligible.com/blog/eligible-achieves-ehnac-cloud-enabled-accreditation/
+    kind: announcement
+    date: '2018-01-18'
+  - source: https://eligible.com/blog/soc2-certification-exceptional-year-without-exceptions/
+    kind: announcement
+    date: '2017-11-09'
+gaps:
+  - No dedicated trust portal (trust.eligible.com does not resolve).
+  - No downloadable or gated report request flow found on the public surface.
+  - No subprocessor list, no data-residency statement, no penetration-test summary.
+  - >-
+    The compliance claims are only machine-readable as a meta description; the page a
+    security reviewer would actually read requires a browser.
+detail: see conformance/eligible-conformance.yml for the dated, per-certification record

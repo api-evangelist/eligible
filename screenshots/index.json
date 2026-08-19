@@ -1,0 +1,11 @@
+[
+  {
+    "repo": "eligible",
+    "captured_at": "2026-08-17T123412",
+    "source_url": "https://eligible.com/",
+    "source_type": "Website",
+    "file": "eligible-2026-08-17T123412.png",
+    "bytes": 185574,
+    "capture": "playwright-local"
+  }
+]

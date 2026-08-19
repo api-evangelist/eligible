@@ -1,0 +1,97 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  Public package-registry metadata endpoints (registry.npmjs.org, rubygems.org/api,
+  pypi.org/pypi, search.maven.org, api.nuget.org), read unauthenticated on 2026-08-14.
+note: >-
+  Eligible ships first-party client libraries in five languages. Ownership is
+  first-party on every entry: the RubyGems owners are @eligible.com staff handles,
+  the npm maintainers all carry @eligible.com addresses, the NuGet author string is
+  "Eligible Inc", and the Maven groupId is com.eligible. The GitHub repositories the
+  packages point at (github.com/eligible/*, github.com/EligibleAPI/eligible-python)
+  are no longer public — only github.com/EligibleAPI/eligible-ruby survives, and it
+  is a placeholder that says the official client "has moved". The registries are
+  therefore the only readable distribution surface, which is why version/published
+  are recorded from registry metadata rather than from a repo.
+packages:
+  - language: ruby
+    registry: rubygems
+    name: eligible
+    url: https://rubygems.org/gems/eligible
+    install: gem install eligible
+    official: true
+    version: 3.0.3
+    published: '2026-01-17'
+    license: MIT
+    downloads: 1139958
+    source_code: https://github.com/EligibleAPI/eligible-ruby
+    note: >-
+      The most actively maintained client. 71 published versions; a 3.1.0.beta6
+      prerelease shipped the same day as 3.0.3. The gem's own CHANGELOG shows the
+      release cadence is dominated by one recurring task — "Updated pinned GDS SSL
+      certificate" — because the library pins SHA-1 fingerprints for
+      gds.eligibleapi.com and must ship a new version whenever that certificate
+      rotates.
+  - language: javascript
+    registry: npm
+    name: eligible-node
+    url: https://www.npmjs.com/package/eligible-node
+    install: npm install eligible-node
+    official: true
+    version: 1.2.9
+    published: '2026-01-17'
+    source_code: https://github.com/eligible/eligible-node
+    note: >-
+      17 versions, first published 2016-02-06. Maintainer accounts are all
+      @eligible.com addresses. The published README states the library implements
+      only part of the API surface (cost estimation and the coverage/claims/payer
+      models present in lib/models), not the full REST surface the Ruby gem covers.
+      Do not confuse with the unrelated npm package "eligible", which is a
+      create-next-app scaffold by a third party, or "eligible-api", a third-party
+      implementation by bookmd.
+  - language: csharp
+    registry: nuget
+    name: Eligible.Net
+    url: https://www.nuget.org/packages/Eligible.Net
+    install: dotnet add package Eligible.Net
+    official: true
+    version: 3.1.2
+    published: '2026-01-17'
+    authors: Eligible Inc
+    source_code: https://github.com/eligible/eligible-CSharp
+    note: CSharp bindings for the Eligible REST API. Repository is no longer public.
+  - language: java
+    registry: maven
+    name: com.eligible:eligible-java
+    url: https://central.sonatype.com/artifact/com.eligible/eligible-java
+    install: <dependency><groupId>com.eligible</groupId><artifactId>eligible-java</artifactId><version>1.13.16</version></dependency>
+    official: true
+    version: 1.13.16
+    published: '2025-01-21'
+    note: >-
+      Released on the same annual January cadence as the other clients, one cycle
+      behind them as of this probe (Ruby, Node and .NET all shipped again in
+      January 2026; Java did not).
+  - language: python
+    registry: pypi
+    name: eligible
+    url: https://pypi.org/project/eligible/
+    install: pip install eligible
+    official: true
+    version: 1.2.1
+    published: '2013-12-30'
+    license: MIT
+    source_code: https://github.com/EligibleAPI/eligible-python
+    note: >-
+      ABANDONED. Seven releases, all in 2013; nothing published in the twelve years
+      since, against an API whose other clients were re-released in January 2026.
+      Eligible's own published Technical FAQ acknowledged the gap as far back as
+      2016 ("We do have an older Python library, however we are producing a new
+      Python library for release in 2016") and no replacement was ever published to
+      PyPI. The linked GitHub repository is gone.
+summary:
+  count: 5
+  official: 5
+  languages: [ruby, javascript, csharp, java, python]
+  most_recent_release: '2026-01-17'
+  oldest_current_release: '2013-12-30'

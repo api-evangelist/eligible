@@ -1,0 +1,165 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://eligible.com/community/technical-features-faq/ and
+  https://eligible.com/community/webhooks-helper-apis/ (Eligible's published
+  community documentation), cross-read against the request/response layer of the
+  first-party clients rubygems.org eligible 3.0.3 and npm eligible-node 1.2.9.
+docs: https://eligible.com/community/technical-features-faq/
+note: >-
+  No OpenAPI exists to derive from; these conventions are read from Eligible's own
+  published FAQ and from the vendor's own client libraries. Where a convention is
+  absent, that absence is recorded rather than omitted.
+authentication:
+  style: api-key
+  detail: see authentication/eligible-authentication.yml
+versioning:
+  scheme: uri-path
+  current: v1.5
+  base: https://gds.eligibleapi.com/v1.5
+  header: Eligible-Version
+  header_note: >-
+    The Ruby client also sends an `Eligible-Version` request header carrying the same
+    version string it puts in the path.
+  policy: >-
+    Eligible's FAQ states: "We keep the version of the API in the query string, so
+    that version will not change and your code should not break because of API
+    changes. Eligible's documentation will reflect new releases, and we will always
+    notify our clients when new releases are available." In practice the version is
+    in the URI PATH, not the query string. v1.5 has been the current version across
+    every published client release since 2016.
+  source: https://eligible.com/community/technical-features-faq/
+content_types:
+  request: application/json
+  response: application/json
+  alternate: >-
+    Any call may be made to return the raw X12 EDI transaction instead of JSON by
+    passing `format=x12`. There is also a dedicated `POST /x12` endpoint for
+    submitting raw X12. This is the healthcare-specific escape hatch under the JSON
+    surface — 270/271 eligibility, 276/277 claim status, 837 claims and 835
+    remittance all have a real EDI representation behind the REST call.
+  source: rubygems:eligible@3.0.3 README.md, lib/eligible/x12.rb
+resource_naming:
+  style: >-
+    Resource paths carry an explicit `.json` suffix (`/claims.json`,
+    `/coverage/all.json`, `/payers/{payer_id}.json`), a Rails-era convention. A few
+    surfaces omit it (`/x12`, `/tickets`, `/payers/search_options`,
+    `/icds/{type}`).
+pagination:
+  supported: unknown
+  note: >-
+    No pagination parameters, cursors or link headers appear in either first-party
+    client or in the public FAQ. The list surfaces the clients expose (payers,
+    customers, enrollment_npis, lockboxes, public_keys, tickets) take no page or
+    cursor argument. Cannot be confirmed either way without the gated reference.
+idempotency:
+  supported: false
+  note: >-
+    NO IDEMPOTENCY CONTRACT. Neither first-party client sends an idempotency key, and
+    no idempotency header, parameter or retry-safety guidance appears anywhere in
+    Eligible's public documentation. This matters more here than for most APIs: the
+    write surface includes claim submission and pre-certification, where a duplicate
+    POST is a duplicate claim to a payer. No `Idempotency` pointer is emitted for
+    this provider, because there is nothing to point at.
+request_tracing:
+  supported: true
+  field: tracking_id
+  location: response body; also X12 TRN02 in the 271 response
+  format: 13-character alphanumeric identifier assigned per transaction
+  example: WYHBS239JJDN1
+  note: >-
+    Eligible assigns a tracking ID to every transaction and returns it in the
+    response, and it is the identifier support asks for. It is a body field, not a
+    request-id response header — an agent has to parse it out of the payload rather
+    than read it off the envelope. The API host separately returns an `X-Request-Id`
+    header (observed: AH2WYJTB731HXO), which is a different identifier.
+  source: https://eligible.com/community/technical-features-faq/
+error_envelope:
+  shape: '{"error": {...}} or {"errors": [{"message": "..."}]}'
+  note: >-
+    Both clients accept either an `error` object or an `errors` array; the array form
+    carries per-item `message` fields that the client concatenates. A 200 response
+    may still carry `errors` without `success`, which the Node client re-raises as a
+    400 — so status code alone is not a reliable success signal on this API.
+  rfc9457: false
+  detail: see errors/eligible-error-codes.yml
+rate_limit_signaling:
+  supported: false
+  note: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After handling exists in either client and
+    no limits are published. See rate-limits/eligible-rate-limits.yml.
+batch:
+  supported: true
+  endpoints:
+    - /coverage/all/batch.json
+    - /demographic/all/batch.json
+    - /medicare/coverage/batch.json
+    - /batch/payment/status.json
+  note: >-
+    Batch submission is offered for Real-Time Eligibility, Coverage and Estimated
+    Primary Payer. Results come back asynchronously and are collected via webhooks
+    rather than by polling.
+  source: https://eligible.com/community/webhooks-helper-apis/
+asynchrony:
+  note: >-
+    The central design fact of this API. Some calls (Coverage) return data inline;
+    others depend on payer-side processing and return later. Eligible's answer is
+    webhooks — see asyncapi/eligible-webhooks.yml — plus a claim-status poller that
+    Eligible runs on the consumer's behalf, daily for payers with no pass-through fee
+    and on a consumer-chosen interval for payers that charge one.
+query_parameters:
+  test:
+    description: Selects sandbox/test processing. Sent on EVERY request by both clients.
+    values: ['true', 'false']
+  format:
+    description: Set to `x12` to receive the raw EDI transaction instead of JSON.
+  multiple_stc:
+    description: >-
+      Set to `true` to submit more than one service type code in a single coverage
+      request.
+    source: https://eligible.com/community/technical-features-faq/
+identifiers:
+  payer_id:
+    description: >-
+      Required on most calls. Eligible publishes the payer list as embeddable JSON
+      and XML rather than requiring an API call for it.
+    latest_list: https://eligible.com/resources/payers/eligibility.json
+    claims_list: https://eligible.com/resources/payers/claims/medical.json
+    search_options: https://eligible.com/resources/payers/eligibility/search-options.json
+    note: >-
+      CORRECTED 2026-08-15. An earlier round recorded these as 403 and unretrieved. They
+      are in fact PUBLIC and unauthenticated — CloudFront answers 403 to a bare client
+      but 200 to a browser User-Agent with a Referer of an eligible.com page, which is
+      exactly what the pricing page's own PtfTable component sends. Retrieved
+      2026-08-15: 414 eligibility payers, 1,643 claims payers, and a per-payer map of
+      accepted member-identity search combinations. These are the only machine-readable
+      documents Eligible publishes anywhere. Schemas in data-model/eligible-data-model.yml.
+  deprecated_payer_id:
+    description: >-
+      Eligible standardized onto one payer ID per payer and continues to accept the
+      superseded IDs, translating them server-side. Responses return both `payer_id`
+      and `deprecated_payer_id`. See lifecycle/.
+  npi:
+    description: Provider NPI. Billing and rendering NPIs must be distinct on claims.
+  taxonomy_code:
+    description: Healthcare provider type code.
+    list: https://eligible.com/resources/health-care-provider-taxonomy-code-set.json
+  control_number:
+    description: Payer-assigned claim control number, returned on payment reports and accepted acknowledgements.
+timeouts:
+  open_timeout_seconds: 30
+  read_timeout_seconds: 80
+  note: >-
+    The values Eligible's own Ruby client ships as defaults. An 80-second read
+    timeout is a straightforward statement that payer round-trips are slow.
+  source: rubygems:eligible@3.0.3 lib/eligible.rb
+cross_links:
+  authentication: authentication/eligible-authentication.yml
+  components: components/eligible-components.yml
+  data_model: data-model/eligible-data-model.yml
+  errors: errors/eligible-error-codes.yml
+  lifecycle: lifecycle/eligible-lifecycle.yml
+  plans: plans/eligible-plans-pricing.yml
+  rate_limits: rate-limits/eligible-rate-limits.yml
+  sandbox: sandbox/eligible-sandbox.yml
+  webhooks: asyncapi/eligible-webhooks.yml

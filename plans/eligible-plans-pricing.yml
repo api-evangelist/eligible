@@ -4,150 +4,201 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Eligible
 providerId: eligible
 created: '2026-05-04'
-modified: '2026-05-04'
-tags:
-  - Billing
-  - Eligibility
-  - Healthcare
-  - Insurance
-  - Claims
-description: Machine-readable plans and pricing scaffold for this API provider. Conforms to the API Commons
-  Plans schema. Tier limits and prices are scaffold defaults; replace with provider-published values.
+modified: '2026-08-15'
+generated: '2026-08-15'
+method: searched
+reconciled: true
+source: https://eligible.com/pricing
+sources:
+  - https://eligible.com/pricing
+  - https://eligible.com/resources/payers/coverage_passthrough.json
+  - https://eligible.com/resources/payers/claims_passthrough.json
+  - https://eligible.com/resources/payers/payment_status_passthrough.json
+  - https://eligible.com/resources/payers/payment_reports_passthrough.json
+note: >-
+  REPLACES A SCAFFOLD. Until this pass the file carried the API Evangelist bulk-sweep
+  defaults (Free/Professional/Enterprise, 1,000 requests a month, "TBD" prices) which
+  Eligible has never published. Every value below is read from Eligible's own pricing
+  page. That page is a client-rendered React app whose served HTML contains only the
+  word "Pricing", so the figures were read out of the page's own JavaScript bundle
+  (/assets/external-site-app-*.js, build 20260702162626, component
+  app/javascript/components/PricingPage/PricingColumns.js) where the copy is present
+  verbatim. Recorded as `searched` on that basis, with each string quoted below exactly
+  as Eligible wrote it.
+pricing_model: >-
+  Transactional, pay-as-you-go, priced as a percentage of dollars remitted plus a
+  per-claim fee. There are no request-quota tiers and no free tier. The two columns are
+  not alternatives — the Patient Clearance price is explicitly additive to the Insurance
+  Billing price ("in addition to the insurance billing cost noted to the left").
+plan_count: 2
+currency: USD
 plans:
-  - id: eligible-free
-    name: Free
-    type: freemium
-    description: Free entry tier for the Eligible API surface. Intended for evaluation, prototyping, and
-      low-volume integrations. Real limits and pricing must be reconciled with the provider's published
-      plan documentation.
+  - id: eligible-insurance-billing-apis
+    name: Insurance Billing APIs
+    type: usage-based
+    description: >-
+      "Access a complete insurance billing platform with simple, pay-as-you-go pricing"
     entries:
-      - label: API Requests
-        description: Monthly API request quota across all included endpoints
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 1000
-        timeFrame: month
-        geo: global
-        domains: []
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the free tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 10
-        timeFrame: minute
-        geo: global
-        domains: []
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-    elements:
-      - name: Public Documentation
-      - name: Community Support
-      - name: Sandbox Access
-      - name: Eligible Coverage API
-      - name: Eligible Claims API
-      - name: Eligible Payment Estimation API
-      - name: Eligible Enrollment API
-      - name: Eligible Payers API
-  - id: eligible-pro
-    name: Professional
-    type: paid
-    description: Production tier for Eligible. Provides higher quotas, priority support, and access to
-      the broader API portfolio. Pricing placeholder; align with the provider's pricing page.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 100000
-        timeFrame: month
-        geo: global
-        domains: []
-        unit: 1
-        price: TBD
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the professional tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 100
-        timeFrame: minute
-        geo: global
-        domains: []
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Overage
-        description: Per-request price after monthly quota is exceeded
-        name: overage
+      - label: Remittance percentage
+        name: remittance_percentage
         type: metered
-        metric: requests
+        metric: dollars_remitted
         limit: -1
+        timeFrame: usage
+        geo: US
+        unit: 1
+        price: 1% of dollars remitted
+        userMultiplied: false
+      - label: Per-claim fee
+        name: per_claim
+        type: metered
+        metric: claim
+        limit: -1
+        timeFrame: usage
+        geo: US
+        unit: 1
+        price: $0.25 per claim
+        userMultiplied: false
+      - label: Account minimum
+        name: account_minimum
+        type: recurring
+        metric: account
+        limit: 1
         timeFrame: month
-        geo: global
-        domains: []
-        unit: 1000
-        price: TBD
+        geo: US
+        unit: 1
+        price: $1.00 per month
+        userMultiplied: false
+        note: Quoted verbatim as "- $1 per month account min fee".
+      - label: Excess real-time payment status and eligibility inquiries
+        name: excess_inquiries
+        type: metered
+        metric: transaction
+        limit: -1
+        timeFrame: usage
+        geo: US
+        unit: 1
+        price: $0.05 per transaction plus applicable PTFs
+        userMultiplied: false
+      - label: Payer passthrough fees (PTF)
+        name: passthrough_fees
+        type: metered
+        metric: transaction
+        limit: -1
+        timeFrame: usage
+        geo: US
+        unit: 1
+        price: per-payer, see passthrough_fees below
         userMultiplied: false
     elements:
-      - name: All Production Endpoints
-      - name: Email Support
-      - name: SLA Targets
-      - name: Webhook Subscriptions
-      - name: Eligible Coverage API
-      - name: Eligible Claims API
-      - name: Eligible Payment Estimation API
-      - name: Eligible Enrollment API
-      - name: Eligible Payers API
-  - id: eligible-enterprise
-    name: Enterprise
-    type: enterprise
-    description: Custom-negotiated tier for Eligible. Includes dedicated capacity, contractual SLAs, security
-      review, data residency options, and named technical account management.
+      - name: Get started in minutes
+      - name: Get endless feature updates
+      - name: API Powered, Rev Cycle Friendly
+  - id: eligible-patient-clearance-apis
+    name: Patient Clearance APIs
+    type: usage-based
+    description: >-
+      "Access a complete patient financial clearance platform with automatic contract
+      rate cleanup." Priced additively on top of Insurance Billing APIs.
+    additive_to: eligible-insurance-billing-apis
     entries:
-      - label: API Requests
-        description: Negotiated request volume; -1 indicates uncapped subject to fair use
-        name: api_requests
-        type: quota
-        metric: requests
+      - label: Per-claim fee
+        name: per_claim_clearance
+        type: metered
+        metric: claim
         limit: -1
-        timeFrame: month
-        geo: configurable
-        domains: []
+        timeFrame: usage
+        geo: US
         unit: 1
-        price: custom
+        price: +$0.30 per claim (in addition to the insurance billing cost)
         userMultiplied: false
-      - label: Rate Limit
-        description: Negotiated burst and steady-state rate
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 1000
-        timeFrame: minute
-        geo: configurable
-        domains: []
+      - label: Included eligibility / cost-estimation calls
+        name: included_calls
+        type: quota
+        metric: calls_per_claim
+        limit: 10
+        timeFrame: usage
+        geo: US
         unit: 1
-        price: custom
+        price: '0.00'
+        userMultiplied: false
+        note: >-
+          "Includes ten eligibility verification and/or cost estimation calls per claim."
+      - label: Excess eligibility inquiries
+        name: excess_eligibility
+        type: metered
+        metric: transaction
+        limit: -1
+        timeFrame: usage
+        geo: US
+        unit: 1
+        price: $0.05 per transaction plus applicable PTFs
+        userMultiplied: false
+      - label: Excess cost estimates
+        name: excess_cost_estimates
+        type: metered
+        metric: transaction
+        limit: -1
+        timeFrame: usage
+        geo: US
+        unit: 1
+        price: $0.25 per transaction plus applicable PTFs
         userMultiplied: false
     elements:
-      - name: Unlimited / Negotiated Volume
-      - name: 24/7 Dedicated Support
-      - name: Contractual SLA
-      - name: Security & Compliance Review
-      - name: Dedicated Account Manager
-      - name: Custom Data Residency
-      - name: Eligible Coverage API
-      - name: Eligible Claims API
-      - name: Eligible Payment Estimation API
-      - name: Eligible Enrollment API
-      - name: Eligible Payers API
+      - name: Everything needed to clear patient insurance
+      - name: Continuous eligibility and price estimations
+      - name: Powered by AI/ML for increased accuracy
+passthrough_fees:
+  description: >-
+    PTFs are per-payer fees Eligible passes through from the insurer, quoted on top of
+    every price above. Unusually for a gated platform, Eligible publishes the full PTF
+    schedule as four PUBLIC, UNAUTHENTICATED JSON documents — the same documents the
+    pricing page's own PtfTable component fetches at runtime. Each row carries
+    payer_ids, payer_name, pass_through_fee (USD) and effective_from. These are the
+    only machine-readable price data Eligible publishes anywhere.
+  probed: '2026-08-15'
+  requires_referer: >-
+    The CloudFront distribution answers 403 to a bare client; a browser User-Agent plus
+    a Referer of https://eligible.com/pricing returns 200. An earlier round recorded
+    these as unreachable for that reason.
+  tables:
+    - transaction: Eligibility Verifications
+      url: https://eligible.com/resources/payers/coverage_passthrough.json
+      status: 200
+      rows: 147
+    - transaction: Payment status
+      url: https://eligible.com/resources/payers/payment_status_passthrough.json
+      status: 200
+      rows: 23
+    - transaction: Payment reports
+      url: https://eligible.com/resources/payers/payment_reports_passthrough.json
+      status: 200
+      rows: 184
+    - transaction: Claims
+      url: https://eligible.com/resources/payers/claims_passthrough.json
+      status: 200
+      rows: 278
+      extra_field: claim_type (professional_claim | institutional_claim)
+  fields: [payer_ids, payer_name, pass_through_fee, effective_from]
+  observed_fee_range: $0.05 – $0.15 per transaction on the sampled rows
+discounts:
+  volume: >-
+    "Volume and commitment length discounts are available. To discuss a custom package
+    for your business please reach out to Eligible's customer success team."
+support:
+  included: >-
+    "All accounts receive basic support by default. To discuss our enterprise support
+    option contact us."
+  plans_page: https://eligible.com/docs/support-plans/eligible-support-plans
+  plans_page_status: 200 (serves the Sign In page — support-plan pricing is gated)
+free_tier: false
+trial: false
+self_serve: false
+access_note: >-
+  Prices are public but the product is not self-serve. Sign-up routes to a waitlist:
+  "Access to Eligible has become more exclusive. Creating an account will add your
+  information to our waitlist. Gaining access may take a considerable amount of time."
+  See https://eligible.com/blog/why-we-limit-access-to-our-platform-eligibles-commitment-to-real-lasting-change-in-healthcare
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

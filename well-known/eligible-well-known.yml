@@ -1,0 +1,164 @@
+generated: '2026-08-15'
+method: probed
+source: live HTTPS probes on 2026-08-14 and re-probed 2026-08-15 with a browser User-Agent and a same-origin Referer
+note: >-
+  NOTHING OF ELIGIBLE'S WAS FOUND. Every /.well-known/ path on every Eligible-controlled
+  host returns 403 (CloudFront) or 404. NO WellKnown, SecurityTxt, APICatalog or
+  AgentCard pointer is emitted from this file — this artifact records a measured
+  absence, not a presence. Recorded so a later run does not re-probe blind.
+  On the 403s: eligible.com and gds.eligibleapi.com sit behind CloudFront and answer 403
+  to any path that is not a real route. Two things were re-tested on 2026-08-15 to be
+  sure the 403 was not an artifact of our client: (a) adding a same-origin Referer,
+  which changed nothing on any /.well-known/ path, and (b) the same header pair applied
+  to https://eligible.com/resources/payers/*.json, which DID flip those from 403 to 200.
+  So the 403 on these paths is "no such document", not "blocked from a document that
+  exists" — proved by finding real documents on the same host with the same client.
+hosts:
+  - host: https://eligible.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+      - path: /.well-known/openid-configuration
+        status: 403
+      - path: /.well-known/oauth-authorization-server
+        status: 403
+      - path: /.well-known/oauth-protected-resource
+        status: 403
+      - path: /.well-known/api-catalog
+        status: 403
+      - path: /.well-known/ai-plugin.json
+        status: 403
+      - path: /.well-known/agent-card.json
+        status: 403
+      - path: /.well-known/agent.json
+        status: 403
+      - path: /llms.txt
+        status: 403
+      - path: /robots.txt
+        status: 200
+        note: >-
+          Serves a named allowlist of search-engine crawlers with `Disallow: /` for
+          everyone else. Not a discovery document; recorded only because it explains the
+          site's posture toward machine clients.
+      - path: /sitemap.xml
+        status: 200
+        note: >-
+          Twelve URLs, all marketing and account pages. No docs, no reference, no
+          developer surface appears in the sitemap at all.
+  - host: https://gds.eligibleapi.com
+    note: the production API host, confirmed live (any /v1.5 resource answers 401 JSON)
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+      - path: /.well-known/openid-configuration
+        status: 403
+      - path: /.well-known/oauth-authorization-server
+        status: 403
+      - path: /.well-known/oauth-protected-resource
+        status: 403
+      - path: /.well-known/api-catalog
+        status: 403
+      - path: /.well-known/ai-plugin.json
+        status: 403
+      - path: /.well-known/agent-card.json
+        status: 403
+      - path: /.well-known/agent.json
+        status: 403
+      - path: /llms.txt
+        status: 403
+  - host: https://account.eligible.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+      - path: /.well-known/openid-configuration
+        status: 403
+      - path: /.well-known/oauth-authorization-server
+        status: 403
+      - path: /.well-known/oauth-protected-resource
+        status: 403
+      - path: /.well-known/api-catalog
+        status: 403
+      - path: /.well-known/ai-plugin.json
+        status: 403
+      - path: /.well-known/agent-card.json
+        status: 403
+      - path: /.well-known/agent.json
+        status: 403
+      - path: /llms.txt
+        status: 403
+  - host: https://status.eligible.com
+    third_party: true
+    vendor: Atlassian Statuspage
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        counted: false
+        rejected: true
+        rejection_reason: >-
+          NOT ELIGIBLE'S DOCUMENT. This is Atlassian's security.txt, served from
+          Atlassian's Statuspage infrastructure on a CNAME'd Eligible subdomain. It says
+          so itself: Contact https://www.atlassian.com/trust/security/report-a-vulnerability
+          and mailto:security@atlassian.com, and Canonical
+          https://www.atlassian.com/.well-known/security.txt. Response headers carry
+          atl-traceid / atl-request-id. Crediting Eligible with a SecurityTxt or
+          WellKnown pointer for this would attribute Atlassian's vulnerability-disclosure
+          program to Eligible, which does not have one.
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 404
+public_machine_readable_documents_found_elsewhere:
+  note: >-
+    Eligible serves no /.well-known/ surface, but it DOES publish real machine-readable
+    documents at ordinary paths. They are recorded here because a discovery client that
+    only walks /.well-known/ will conclude, wrongly, that this provider publishes nothing
+    machine-readable. All seven require a browser User-Agent and a Referer.
+  documents:
+    - url: https://eligible.com/resources/payers/eligibility.json
+      status: 200
+      records: 414
+    - url: https://eligible.com/resources/payers/claims/medical.json
+      status: 200
+      records: 1643
+    - url: https://eligible.com/resources/payers/eligibility/search-options.json
+      status: 200
+      records: 414
+    - url: https://eligible.com/resources/payers/coverage_passthrough.json
+      status: 200
+      records: 147
+    - url: https://eligible.com/resources/payers/claims_passthrough.json
+      status: 200
+      records: 278
+    - url: https://eligible.com/resources/payers/payment_status_passthrough.json
+      status: 200
+      records: 23
+    - url: https://eligible.com/resources/payers/payment_reports_passthrough.json
+      status: 200
+      records: 184
+    - url: https://status.eligible.com/api/v2/summary.json
+      status: 200
+      note: Atlassian Statuspage API — third-party infrastructure, but Eligible's own status data.
+  detail: data-model/eligible-data-model.yml, plans/eligible-plans-pricing.yml
+summary:
+  paths_probed: 38
+  documents_found: 0
+  first_party_documents_found: 0
+  third_party_documents_rejected: 1
+  security_txt: false
+  openid_configuration: false
+  oauth_authorization_server: false
+  api_catalog: false
+  agent_card: false
+  llms_txt: false

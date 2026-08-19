@@ -1,0 +1,153 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://eligible.com/community/common-errors-faq/ and
+  https://eligible.com/community/technical-features-faq/ (Eligible's published error
+  guidance), plus the error-handling layer of the first-party clients rubygems.org
+  eligible 3.0.3 (lib/eligible.rb, lib/eligible/errors/*) and npm eligible-node 1.2.9
+  (lib/http/client.js, lib/errors/index.js), plus one anonymous live probe of
+  https://gds.eligibleapi.com/v1.5/payers.json.
+docs: https://eligible.com/community/common-errors-faq/
+format: vendor
+rfc9457: false
+note: >-
+  DERIVED WITHOUT AN OPENAPI. There are three distinct error layers on this API and
+  they do not share a vocabulary: HTTP status codes, an Eligible JSON error envelope,
+  and X12/EDI reject codes forwarded from the payer. The third layer is the one that
+  actually breaks integrations, because a claim or eligibility request can return
+  HTTP 200 and still have failed at the payer.
+envelope:
+  shape: '{"error": {...}} | {"errors": [{"message": "..."}]}'
+  fields:
+    error: >-
+      Object form. Clients read `details` or `reject_reason_description` off it, else
+      stringify the whole object.
+    errors: >-
+      Array form. Each element carries `message`; multiple messages are numbered and
+      joined by the clients.
+  gotcha: >-
+    A 200 response carrying `errors` (or `error`) with no `success` flag is a
+    FAILURE. Eligible's own Node client explicitly re-raises that case as a 400. Any
+    consumer or agent that branches on HTTP status alone will silently treat failed
+    eligibility and claim submissions as successes.
+  source: rubygems:eligible@3.0.3 lib/eligible.rb, npm:eligible-node@1.2.9 lib/http/client.js
+http_statuses:
+  - status: 200
+    meaning: Request processed. May still carry `error`/`errors` — see envelope.gotcha.
+  - status: 400
+    title: Bad request, invalid or missing parameters
+    client_class: InvalidRequestError
+    remediation: Check required parameters for the payer; see Payer Search Options.
+  - status: 401
+    title: Authentication or authorization error
+    client_class: AuthenticationError
+    observed_body: Could not authenticate you. Please re-try with a valid API key.
+    observed_content_type: application/json
+    probed: '2026-08-14'
+    remediation: >-
+      Eligible documents two distinct causes behind this one status: an invalid API
+      key (commonly the publishable key sent where the API key belongs), OR the
+      provider not being enrolled with the payer. The second is not an authentication
+      problem at all, and it is not distinguishable from the first by status code.
+    note: >-
+      The body is a bare quoted string, not a JSON object, despite the
+      `application/json` content type — so a strict client that expects the documented
+      `{"error"...}` envelope will fail to parse the most common error on the API.
+  - status: 404
+    title: Not Found
+    client_class: InvalidRequestError
+    remediation: Verify the resource id and the API version segment in the path.
+  - status: other
+    title: Unhandled API error
+    client_class: APIError
+error_families:
+  - id: aaa
+    name: X12 271 AAA reject codes
+    layer: payer / EDI
+    description: >-
+      Eligibility (270/271) failures come back as AAA_xx codes forwarded from the
+      payer. The leading digit classifies the fault, which is what tells a consumer
+      whether to retry, fix its own request, or escalate.
+    classes:
+      - code: AAA_4x
+        meaning: System or server errors on the requester or payer end.
+        action: Retry later; this is not a data problem.
+      - code: AAA_41
+        meaning: Not authorized to perform action.
+        action: Check provider enrollment with this payer.
+      - code: AAA_42
+        meaning: System not responding.
+        action: Retry later; payer endpoint is down.
+      - code: AAA_5x
+        meaning: Issue with the provider information that was requested.
+        action: Correct the provider NPI / taxonomy / submitter details.
+      - code: AAA_7x
+        meaning: Invalid data in the subscriber details.
+        action: >-
+          Most commonly wrong patient information. Re-check member ID, name, and date
+          of birth against the insurance card.
+    source: https://eligible.com/community/technical-features-faq/
+  - id: claim-rejections
+    name: Common claim rejections
+    layer: payer / EDI
+    description: >-
+      Eligible publishes the recurring 837 claim rejections and the remediation for
+      each. These are returned through claim acknowledgements, not as HTTP errors.
+    codes:
+      - meaning: Missing hospital admission hour
+        action: Ensure the admission date is included.
+      - meaning: Diagnosis code invalid, or not usable as a principal diagnosis code
+        action: Check the submitted diagnosis codes; non-billable codes are also rejected here.
+      - meaning: Rendering provider missing
+        action: >-
+          Usually caused by sending the same NPI for billing and rendering provider,
+          which Eligible scrubs. Send the group NPI for billing and the individual NPI
+          for rendering.
+      - meaning: Billing provider not approved as an electronic submitter
+        action: Enrollment issue — the payer does not have the provider on file for electronic submission.
+      - meaning: >-
+          Value of element identification code qualifier is incorrect; expected 'XX'
+          for covered providers when NPI is mandated
+        action: An NM1 segment is incomplete — usually a missing rendering or service provider NPI.
+      - meaning: Service facility not found but expected due to the place of service
+        action: >-
+          Occurs when place of service is home (12) or custodial care (33); send the
+          service facility for those.
+      - meaning: Payer claim office number or PO Box is missing or incorrect
+        action: Verify the payer address against the Authorization of Care letter.
+      - meaning: Billing NPI is not on file
+        action: The payer must add the provider's NPI.
+      - meaning: Submitter not approved for electronic claim submissions for this billing provider
+        action: >-
+          Enrollment issue — wrong submitter ID, or the provider's submitter ID sent
+          where Eligible's is required.
+      - meaning: Entity not found, patient
+        action: Incorrect patient identification or date of birth.
+      - meaning: Missing or invalid information
+        action: >-
+          Eligible's own note: if this is the only error, either the payer returned no
+          rejection reason or Eligible's parsing failed. Escalate to support@eligible.com.
+    source: https://eligible.com/community/common-errors-faq/
+client_exception_classes:
+  ruby:
+    - EligibleError
+    - APIConnectionError
+    - AuthenticationError
+    - APIError
+    - InvalidRequestError
+  javascript:
+    - EligibleError
+    - APIConnectionError
+    - APIResponseError
+    - APIError
+    - AuthenticationError
+    - InvalidRequestError
+  note: >-
+    Both clients expose http_status, http_body and a parsed errors[] on the raised
+    exception, so the envelope is recoverable programmatically even where the
+    documentation is not public.
+support_escalation:
+  email: support@eligible.com
+  required_context: >-
+    Eligible asks for the 13-character transaction tracking ID (TRN02 in the 271) when
+    reporting an issue.

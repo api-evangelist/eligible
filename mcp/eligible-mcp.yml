@@ -1,0 +1,139 @@
+generated: '2026-08-15'
+method: derived
+status: candidate
+source: >-
+  Candidate tool set derived from the operation surface reconstructed in
+  data-model/eligible-data-model.yml (itself read out of rubygems.org eligible 3.0.3).
+  Searched first for a published server on 2026-08-15 and found none.
+note: >-
+  ELIGIBLE SHIPS NO MCP SERVER. This file is a CANDIDATE, not a discovery manifest — no
+  endpoint, package or install command below is asserted, because none exists. It
+  records what an MCP surface over Eligible would bind to if the provider (or a
+  consumer) built one, grounded in operations that genuinely exist in the vendor's own
+  client. Do not read any tool below as callable today.
+search:
+  checked:
+    - url: https://gds.eligibleapi.com/mcp
+      status: 403
+    - url: https://eligible.com/mcp
+      status: 403
+    - url: https://eligible.com/.well-known/agent-card.json
+      status: 403
+    - url: https://eligible.com/llms.txt
+      status: 403
+    - registry: npm (@eligible/*, eligible-mcp)
+      result: no first-party MCP package published
+    - registry: github.com/eligible + github.com/EligibleAPI
+      result: both orgs contain only forks of third-party projects; no MCP repository
+  result: none found
+pointer_withheld:
+  type: MCPServer
+  reason: >-
+    NO `type: MCPServer` POINTER IS EMITTED IN apis.yml FOR THIS FILE. The pointer
+    asserts that an agent can reach this provider over MCP, and it feeds a 12-point
+    agent-readiness dimension. Eligible ships no server, so the pointer would credit an
+    agent surface that does not exist — the same failure mode the a2a/ and well-known/
+    rules exist to prevent. Wire the pointer only if and when a real endpoint or package
+    is found.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: api-key
+  auth_note: >-
+    An API key is the only credential Eligible issues, and keys are only available to
+    waitlisted, contracted accounts. Any future MCP surface inherits that: there is no
+    OAuth authorization server and no scope model to delegate with.
+  verified: searched
+agent_readiness_note: >-
+  The blocker here is not the missing server, it is the missing contract. There is no
+  OpenAPI to generate tools from and no public JSON Schema for any transactional entity,
+  so a generated tool's inputSchema would have to be authored by hand from prose. That
+  is why every tool below is marked with the operation it would wrap rather than with a
+  schema.
+tools:
+  - name: check_coverage
+    description: Run a real-time 270/271 eligibility and benefits check for a member against a payer.
+    source_operation: GET /coverage/all.json
+    requires: [npi, payer_id, member_id, member_first_name, member_last_name, member_dob]
+    consequence: read
+  - name: estimate_patient_cost
+    description: Calculate expected patient out-of-pocket cost — deductible, coinsurance, copay, stop loss.
+    source_operation: GET /coverage/cost_estimates.json
+    consequence: read
+  - name: check_medicare_coverage
+    description: Run a Medicare-specific coverage inquiry.
+    source_operation: GET /medicare/coverage.json
+    consequence: read
+  - name: verify_demographics
+    description: Verify member demographic information against the payer.
+    source_operation: GET /demographic/all.json
+    consequence: read
+  - name: list_payers
+    description: List the insurance payers Eligible transacts with and their capabilities.
+    source_operation: GET /payers.json
+    public_alternative: https://eligible.com/resources/payers/eligibility.json
+    consequence: read
+  - name: get_payer_search_options
+    description: Get the member-identity field combinations one payer accepts for a coverage request.
+    source_operation: GET /payers/{payer_id}/search_options
+    public_alternative: https://eligible.com/resources/payers/eligibility/search-options.json
+    consequence: read
+  - name: submit_claim
+    description: Submit an 837 professional or institutional claim to a payer.
+    source_operation: POST /claims.json
+    consequence: write
+    escalation: required
+    escalation_reason: >-
+      A duplicate call is a duplicate claim to a real insurer, and this API has NO
+      idempotency contract (see conventions/). Any agent binding this tool must gate it
+      behind explicit human confirmation.
+  - name: get_claim_acknowledgements
+    description: Retrieve payer acceptance or rejection for a submitted claim.
+    source_operation: GET /claims/{reference_id}/acknowledgements.json
+    consequence: read
+  - name: get_payment_reports
+    description: Retrieve 835 remittance advice for a claim.
+    source_operation: GET /claims/{reference_id}/payment_reports
+    consequence: read
+  - name: get_payment_status
+    description: Check 276/277 claim status.
+    source_operation: GET /payment/status.json
+    consequence: read
+  - name: list_enrollments
+    description: List trading-partner enrollments for provider NPIs.
+    source_operation: GET /enrollment_npis.json
+    consequence: read
+  - name: create_enrollment
+    description: Submit a trading-partner enrollment request for a provider NPI with a payer.
+    source_operation: POST /enrollment_npis.json
+    consequence: write
+    escalation: required
+  - name: check_precert_required
+    description: Check whether a service requires pre-certification.
+    source_operation: GET /precert/require.json
+    consequence: read
+  - name: create_precert
+    description: Submit a pre-certification / prior-authorization request.
+    source_operation: POST /precert/create.json
+    consequence: write
+    escalation: required
+  - name: search_icd_codes
+    description: Search ICD codes, describe a code, or crosswalk between ICD-9 and ICD-10.
+    source_operation: GET /icds/{type}, /icds/{type}/describe/{code}, /icds/{type}/crosswalk/{code}
+    consequence: read
+  - name: scan_insurance_card
+    description: OCR an insurance card image into structured member identity fields.
+    source_operation: POST /card_scans.json
+    consequence: write
+    note: Multipart upload of a photograph of a patient's insurance card — PHI on the wire.
+coverage:
+  operations_available: 65
+  tools_proposed: 16
+  tools_published: 0
+  note: >-
+    Sixteen of sixty-five operations carry enough public description to name a tool for.
+    The remainder (account management, lockboxes, public keys, tickets, session tokens,
+    PDFs, raw X12) are administrative or credential-handling surfaces that should not be
+    exposed to an agent at all.
