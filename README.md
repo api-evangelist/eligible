@@ -1,4 +1,4 @@
-# Eligible (eligible)
+# Eligible
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,97 +66,130 @@
 
 Eligible provides insurance billing APIs for healthcare businesses, enabling the integration of insurance billing experiences into healthcare applications. The platform supports eligibility verification, coverage discovery, claims submission and tracking, payment estimation, enrollment, and remittance processing across a large network of US payers.
 
-**URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/eligible/refs/heads/main/apis.yml)
+**Areas:** Billing · Eligibility · Healthcare · Insurance · Claims · Health Insurance
 
-## Scope
+## Eligible on APIs.io
 
-- **Type:** Index
-- **Position:** Consumer
-- **Access:** 3rd-Party
+Everything profiled for Eligible is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/eligible/](https://apis.io/providers/eligible/)** — or go straight to one of the APIs or properties below.
 
-## Tags:
+### APIs (5)
 
- - Billing, Eligibility, Healthcare, Insurance, Claims
+- [Eligible Coverage API](https://apis.io/apis/eligible/coverage/) — The Coverage API performs real-time insurance eligibility and benefits verification for a patient against a payer. Clients submit provider NPI, payer ID,…
+- [Eligible Claims API](https://apis.io/apis/eligible/claims/) — The Claims API supports submission, tracking, and status checking of professional and institutional healthcare claims to payers across the Eligible network.…
+- [Eligible Payment Estimation API](https://apis.io/apis/eligible/payment-estimation/) — The Payment Estimation API calculates expected patient out-of-pocket amounts for a service before it is rendered, combining benefit details from a coverage…
+- [Eligible Enrollment API](https://apis.io/apis/eligible/enrollment/) — The Enrollment API manages the trading partner enrollment workflow that providers must complete with payers in order to exchange eligibility, claims, and…
+- [Eligible Payers API](https://apis.io/apis/eligible/payers/) — The Payers API exposes the directory of insurance payers supported by Eligible, including payer identifiers, names, supported transaction types, enrollment…
 
-## Timestamps
+### Published properties
 
-- **Created:** 2024-07-02
-- **Modified:** 2026-04-28
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### AsyncAPI (1)
 
-### Eligible Coverage API
-The Coverage API performs real-time insurance eligibility and benefits verification for a patient against a payer. Clients submit provider NPI, payer ID, and member identity information and receive structured benefit details including plan status, copays, coinsurance, deductibles, and out-of-pocket maximums.
+Event-driven and webhook contracts.
 
-**Human URL:** [https://eligible.com/](https://eligible.com/)
+- [Eligible Webhooks](https://apis.io/asyncapis/eligible/eligible-webhooks/)
 
-#### Tags:
+#### MCP servers (1)
 
- - Coverage, Eligibility, Healthcare, Insurance
+Model Context Protocol servers that expose the API to agents.
 
-#### Properties
+- [eligible-mcp.yml](https://apis.io/servers/eligible/eligible-mcp-yml/)
 
-- [Documentation](https://eligible.com/)
+#### Security (3)
 
-### Eligible Claims API
-The Claims API supports submission, tracking, and status checking of professional and institutional healthcare claims to payers across the Eligible network. The API also provides claim acknowledgement, rejection, and remittance retrieval workflows for healthcare billing applications.
+Authentication, trust centre, and vulnerability disclosure.
 
-**Human URL:** [https://eligible.com/](https://eligible.com/)
+- [Eligible Authentication](https://apis.io/security/eligible/eligible-authentication/)
+- [Eligible Domain Security](https://apis.io/security/eligible/eligible-domain-security/)
+- [Eligible Trust Center](https://apis.io/security/eligible/eligible-trust-center/)
 
-#### Tags:
+#### Plans and pricing (1)
 
- - Claims, Billing, Healthcare, Insurance
+Published plans, tiers and prices.
 
-#### Properties
+- [Eligible Plans Pricing](https://apis.io/plans/eligible/eligible-plans-pricing/)
 
-- [Documentation](https://eligible.com/)
+#### Rate limits (1)
 
-### Eligible Payment Estimation API
-The Payment Estimation API calculates expected patient out-of-pocket amounts for a service before it is rendered, combining benefit details from a coverage check with provider contracted rates and accumulators. The API helps providers offer transparent cost estimates and collect patient responsibility at the point of service.
+Published request limits.
 
-**Human URL:** [https://eligible.com/](https://eligible.com/)
+- [Eligible Rate Limits](https://apis.io/rate-limits/eligible/eligible-rate-limits/)
 
-#### Tags:
+#### FinOps (1)
 
- - Payment Estimation, Cost Transparency, Healthcare, Billing
+What the API costs to run, by operation.
 
-#### Properties
+- [Eligible Finops](https://apis.io/finops/eligible/eligible-finops/)
 
-- [Documentation](https://eligible.com/)
+## Where to find this API
 
-### Eligible Enrollment API
-The Enrollment API manages the trading partner enrollment workflow that providers must complete with payers in order to exchange eligibility, claims, and remittance transactions through Eligible. The API supports submission, tracking, and status retrieval of enrollment requests.
-
-**Human URL:** [https://eligible.com/](https://eligible.com/)
-
-#### Tags:
-
- - Enrollment, Trading Partner, Healthcare, Insurance
-
-#### Properties
-
-- [Documentation](https://eligible.com/)
-
-### Eligible Payers API
-The Payers API exposes the directory of insurance payers supported by Eligible, including payer identifiers, names, supported transaction types, enrollment requirements, and webhook capabilities. Clients use this API to select payers and check the status of supported transactions.
-
-**Human URL:** [https://eligible.com/](https://eligible.com/)
-
-#### Tags:
-
- - Payers, Directory, Healthcare, Insurance
-
-#### Properties
-
-- [Documentation](https://eligible.com/)
-
-## Common Properties
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://eligible.com/)
-- [Documentation](https://eligible.com/)
+- [Documentation](https://eligible.com/docs)
+- [API reference](https://eligible.com/reference)
+- [Pricing](https://eligible.com/pricing)
+- [Sign up](https://eligible.com/signup)
+- [Support](https://eligible.com/support)
+- [Blog](https://eligible.com/blog/feed/)
+- [Compliance](https://eligible.com/compliance)
+- [Terms of service](https://eligible.com/terms)
+- [Privacy policy](https://eligible.com/privacy)
+- [GitHub](https://github.com/eligible)
+- [Status](https://status.eligible.com)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
+**Kin Score 50.3** — developing · rubric 0.25.0 · scored 2026-10-23
 
-**Email:** kin@apievangelist.com
+| Facet | Score |
+|---|---|
+| Discoverability | 71.4 |
+| Contract quality | 39.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 26.3 |
+| Developer ergonomics | 50.0 |
+| Access clarity | 81.6 |
+
+**Agent readiness 25.2** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | na |
+
+**Regulatory alignment 26.3** — Insurance
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/eligible/](https://apis.io/providers/eligible/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Eligible: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/eligible/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
