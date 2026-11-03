@@ -38,7 +38,7 @@ plans:
   overage: Excess eligibility inquiries are charged at 5 cents per transaction plus applicable PTFs and
     Excess cost estimates at 25 cents per transaction plus applicable PTFs.
 x-canonical:
-  generated: '2026-11-01'
+  generated: '2026-11-02'
   vocabulary: engine/economics/plans-canonical.yml
   models:
   - hybrid
